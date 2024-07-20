@@ -1,7 +1,7 @@
 use chrono::{DateTime, Utc};
 use uuid::Uuid;
 use rand::{Rng};
-use crate::models::Menu::MenuItem;
+use crate::models::menu::MenuItem;
 
 #[derive(Clone, Debug)]
 pub struct MealItem {
@@ -14,7 +14,7 @@ pub struct MealItem {
 }
 
 impl MealItem {
-    pub fn create_meal_item(menu_item: MenuItem) -> MealItem {
+    pub fn create(menu_item: MenuItem) -> MealItem {
         MealItem {
             meal_item_id: Uuid::new_v4(),
             menu_item,
@@ -25,8 +25,24 @@ impl MealItem {
         }
     }
 
-    pub fn remove_meal_item(&mut self) {
+    pub fn remove(&mut self) {
         self.update_time = Utc::now();
         self.is_removed = true;
+    }
+
+    pub fn id(&self) -> Uuid {
+        self.meal_item_id
+    }
+
+    pub fn cooking_time_in_min(&self) -> u32 {
+        self.cooking_time_in_min
+    }
+
+    pub fn price(&self) -> f64 {
+        self.menu_item.price()
+    }
+
+    pub fn is_removed(&self) -> bool {
+        self.is_removed
     }
 }

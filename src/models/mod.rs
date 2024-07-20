@@ -1,3 +1,3 @@
-pub mod Menu;
-pub mod Meal;
+pub mod menu;
+pub mod meal;
 pub mod order;
