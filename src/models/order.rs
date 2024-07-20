@@ -77,4 +77,8 @@ impl Order {
     pub fn update_status(&mut self, status: OrderStatus) {
         self.status = status
     }
+
+    pub fn get_table_id(&self) -> u32 {
+        self.table_id
+    }
 }

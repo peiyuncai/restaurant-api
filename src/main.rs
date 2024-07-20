@@ -1,5 +1,7 @@
 use crate::models::menu::{Menu, MenuItem};
+use crate::models::order::Order;
 use crate::repositories::menu::MenuRepo;
+use crate::repositories::order::OrderRepo;
 
 mod models;
 mod repositories;
@@ -17,7 +19,7 @@ fn main() {
     );
     let menu = Menu::new(
         String::from("fast food menu"),
-        vec![menu_item1, menu_item2],
+        vec![menu_item1.clone(), menu_item2.clone()],
     );
 
     let menu_repo = MenuRepo::new();
@@ -27,4 +29,12 @@ fn main() {
         println!("{:?}", retrieve_menu);
     }
 
+    println!(" ");
+
+    let order_repo = OrderRepo::new();
+    let order = Order::new(23, vec![menu_item1.clone(), menu_item2.clone()]);
+    order_repo.add(order.clone());
+    if let Some(retrieve_order) = order_repo.get_order_by_table_id(order.get_table_id()) {
+        println!("{:?}", retrieve_order);
+    }
 }

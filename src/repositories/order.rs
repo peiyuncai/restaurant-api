@@ -15,11 +15,20 @@ impl OrderRepo {
         }
     }
 
-    fn get_order_by_table_id(&self, id: u32) -> Option<Arc<Mutex<Order>>> {
-        self.orders.get(&id).map(|entry| entry.value().clone())
+    pub fn add(&self, order: Order) {
+        let table_id = order.get_table_id();
+        let order_arc = Arc::new(Mutex::new(order));
+        self.orders.insert(table_id, order_arc);
     }
 
-    fn update_order_meal_item_status(&self, table_id: u32, meal_item_id: Uuid, meal_item_status: MealItemStatus) -> bool {
+    pub fn get_order_by_table_id(&self, id: u32) -> Option<Order> {
+        self.orders.get(&id).map(|order_arc| {
+            let order = order_arc.lock().unwrap();
+            order.clone()
+        })
+    }
+
+    pub fn update_order_meal_item_status(&self, table_id: u32, meal_item_id: Uuid, meal_item_status: MealItemStatus) -> bool {
         if let Some(order_arc) = self.orders.get(&table_id) {
             let mut order = order_arc.lock().unwrap();
             if order.get_status() == OrderStatus::Received {
