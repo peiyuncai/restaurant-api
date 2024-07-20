@@ -4,6 +4,13 @@ use rand::{Rng};
 use crate::models::menu::MenuItem;
 
 #[derive(Clone, Debug)]
+pub enum MealItemStatus {
+    Received,
+    Preparing,
+    Completed,
+}
+
+#[derive(Clone, Debug)]
 pub struct MealItem {
     meal_item_id: Uuid,
     menu_item: MenuItem,
@@ -11,6 +18,7 @@ pub struct MealItem {
     update_time: DateTime<Utc>,
     cooking_time_in_min: u32,
     is_removed: bool,
+    status: MealItemStatus,
 }
 
 impl MealItem {
@@ -22,6 +30,7 @@ impl MealItem {
             update_time: Utc::now(),
             cooking_time_in_min: rand::thread_rng().gen_range(5..=15),
             is_removed: false,
+            status: MealItemStatus::Received,
         }
     }
 
@@ -44,5 +53,10 @@ impl MealItem {
 
     pub fn is_removed(&self) -> bool {
         self.is_removed
+    }
+
+    pub fn update_state(&mut self, status: MealItemStatus) {
+        self.status = status;
+        self.update_time = Utc::now();
     }
 }
