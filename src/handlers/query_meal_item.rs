@@ -1,7 +1,7 @@
 use std::sync::{Arc};
 use serde::Serialize;
 use uuid::Uuid;
-use crate::handlers::query_order::convertPrice;
+use crate::handlers::query_order::convert_price;
 use crate::models::meal::{MealItem};
 use crate::repositories::order::OrderRepo;
 
@@ -21,7 +21,7 @@ impl MealItemResp {
         MealItemResp {
             meal_item_id: item.id(),
             name: item.get_name(),
-            price: convertPrice(item.price()),
+            price: convert_price(item.price()),
             cooking_time_in_min: item.cooking_time_in_min(),
             is_removed: item.is_removed(),
             status: item.get_status().to_string(),

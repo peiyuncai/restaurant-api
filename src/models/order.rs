@@ -63,14 +63,21 @@ impl Order {
         true
     }
 
-    pub fn remove_meal_items(&mut self, meal_item_ids: Vec<Uuid>) -> bool {
+    pub fn remove_meal_items(&mut self, meal_item_ids: Vec<Uuid>) -> Vec<Uuid> {
+        let mut non_removable_items = Vec::new();
         for meal_item_id in meal_item_ids.iter() {
             if let Some(meal_item) = self.meal_items.get(meal_item_id) {
                 let mut meal_item = meal_item.lock().unwrap();
+                println!("{} check if item can be removed", meal_item.id());
+
                 match meal_item.get_status() {
-                    MealItemStatus::Preparing | MealItemStatus::Completed => return false,
+                    MealItemStatus::Preparing | MealItemStatus::Completed => {
+                        non_removable_items.push(meal_item_id.clone());
+                        continue;
+                    },
                     _ => {}
                 }
+                println!("{} is removed", meal_item.id());
                 self.total_price -= meal_item.price();
                 self.total_cooking_time_in_min -= meal_item.cooking_time_in_min();
 
@@ -81,7 +88,7 @@ impl Order {
         // if self.meal_items.iter().filter(|m| !m.lock().unwrap().is_removed()).count() == 0 {
         //     self.status = OrderStatus::Canceled;
         // }
-        true
+        non_removable_items
     }
 
     pub fn get_meal_items(&self) -> Vec<Arc<Mutex<MealItem>>> {

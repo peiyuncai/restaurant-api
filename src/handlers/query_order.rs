@@ -23,7 +23,8 @@ struct OrderResp {
 
 
 impl OrderResp {
-    pub fn new(order: Order, includeRemovedItems: bool) -> Self {
+    pub fn new(order: Order, include_removed_items: bool) -> Self {
+        println!("{} include removed items", include_removed_items);
         let mut order_resp = OrderResp {
             total_price: "".to_string(),
             remaining_cooking_time_upper_bound_in_min: 0,
@@ -31,7 +32,7 @@ impl OrderResp {
             meal_items: vec![],
         };
 
-        order_resp.total_price = convertPrice(order.get_total_price());
+        order_resp.total_price = convert_price(order.get_total_price());
 
         let mut has_preparing = false;
         let mut has_received = false;
@@ -41,11 +42,11 @@ impl OrderResp {
         for item_arc in order.get_meal_items().iter() {
             let item = item_arc.lock().unwrap();
 
-            if !item.is_removed() || includeRemovedItems {
+            if !item.is_removed() || include_removed_items {
                 let item_resp = MealItemResp {
                     meal_item_id: item.id(),
                     name: item.get_name(),
-                    price: convertPrice(item.price()),
+                    price: convert_price(item.price()),
                 };
                 order_resp.meal_items.push(item_resp);
             }
@@ -85,7 +86,7 @@ impl OrderResp {
     }
 }
 
-pub fn convertPrice(price: f64) -> String {
+pub fn convert_price(price: f64) -> String {
     let price_in_cents: u64 = (price * 100.0) as u64;
     price_in_cents.to_string()
 }
@@ -108,11 +109,11 @@ impl QueryOrderHandler {
         }
     }
 
-    pub fn handle(&self, table_id: u32, includeRemovedItems: bool) -> Result<impl warp::Reply, warp::Rejection> {
+    pub fn handle(&self, table_id: u32, include_removed_items: bool) -> Result<impl warp::Reply, warp::Rejection> {
         if let Some(order_arc) = self.order_repo.get_order_by_table_id(table_id) {
             let order = order_arc.lock().unwrap().clone();
             let resp = QueryOrderResp {
-                order: OrderResp::new(order, includeRemovedItems),
+                order: OrderResp::new(order, include_removed_items),
             };
             Ok(warp::reply::json(&resp))
         } else {

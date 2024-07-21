@@ -60,4 +60,13 @@ impl OrderRepo {
             false
         }
     }
+
+    pub fn remove_order_meal_items(&self, table_id: u32, meal_item_ids: Vec<Uuid>) -> Vec<Uuid> {
+        if let Some(order_arc) = self.orders.get(&table_id) {
+            let mut order = order_arc.lock().unwrap();
+            order.remove_meal_items(meal_item_ids)
+        } else {
+            vec![]
+        }
+    }
 }
