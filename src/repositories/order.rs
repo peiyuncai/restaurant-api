@@ -50,4 +50,14 @@ impl OrderRepo {
             false
         }
     }
+
+    pub fn add_order_meal_items(&self, table_id: u32, meal_items: Vec<MealItem>) -> bool {
+        if let Some(order_arc) = self.orders.get(&table_id) {
+            let mut order = order_arc.lock().unwrap();
+            order.add_meal_items(meal_items);
+            true
+        } else {
+            false
+        }
+    }
 }

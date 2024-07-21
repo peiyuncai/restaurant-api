@@ -1,36 +1,29 @@
 use std::sync::{Arc, Mutex};
-use chrono::{DateTime, Utc};
 use serde::Serialize;
 use uuid::Uuid;
-use warp::Reply;
 use crate::libraries::thread_pool::ThreadPool;
 use crate::models::meal::MealItemStatus;
-use crate::models::menu::MenuItem;
 use crate::models::order::{Order, OrderStatus};
 use crate::repositories::order::OrderRepo;
 
 #[derive(Serialize)]
-pub struct MealItemResp {
+struct MealItemResp {
     meal_item_id: Uuid,
     name: String,
     price: String,
 }
 
 #[derive(Serialize)]
-pub struct OrderResp {
+struct OrderResp {
     remaining_cooking_time_upper_bound_in_min: u32,
     total_price: String,
     status: OrderStatus,
     meal_items: Vec<MealItemResp>,
 }
 
-pub fn convertPrice(price: f64) -> String {
-    let price_in_cents: u64 = (price * 100.0) as u64;
-    price_in_cents.to_string()
-}
 
 impl OrderResp {
-    pub fn new(order: Order) -> Self {
+    pub fn new(order: Order, includeRemovedItems: bool) -> Self {
         let mut order_resp = OrderResp {
             total_price: "".to_string(),
             remaining_cooking_time_upper_bound_in_min: 0,
@@ -47,16 +40,21 @@ impl OrderResp {
 
         for item_arc in order.get_meal_items().iter() {
             let item = item_arc.lock().unwrap();
-            if item.is_removed() { continue; }
+
+            if !item.is_removed() || includeRemovedItems {
+                let item_resp = MealItemResp {
+                    meal_item_id: item.id(),
+                    name: item.get_name(),
+                    price: convertPrice(item.price()),
+                };
+                order_resp.meal_items.push(item_resp);
+            }
+
+            if item.is_removed() {
+                continue;
+            }
 
             all_removed = false;
-
-            let item_resp = MealItemResp {
-                meal_item_id: item.id(),
-                name: item.get_name(),
-                price: convertPrice(item.price()),
-            };
-            order_resp.meal_items.push(item_resp);
 
             match item.get_status() {
                 MealItemStatus::Received => {
@@ -87,8 +85,13 @@ impl OrderResp {
     }
 }
 
+pub fn convertPrice(price: f64) -> String {
+    let price_in_cents: u64 = (price * 100.0) as u64;
+    price_in_cents.to_string()
+}
+
 #[derive(Serialize)]
-pub struct QueryOrderResp {
+struct QueryOrderResp {
     order: OrderResp,
 }
 
@@ -105,11 +108,11 @@ impl QueryOrderHandler {
         }
     }
 
-    pub fn handle(&self, table_id: u32) -> Result<impl warp::Reply, warp::Rejection> {
+    pub fn handle(&self, table_id: u32, includeRemovedItems: bool) -> Result<impl warp::Reply, warp::Rejection> {
         if let Some(order_arc) = self.order_repo.get_order_by_table_id(table_id) {
             let order = order_arc.lock().unwrap().clone();
             let resp = QueryOrderResp {
-                order: OrderResp::new(order),
+                order: OrderResp::new(order, includeRemovedItems),
             };
             Ok(warp::reply::json(&resp))
         } else {

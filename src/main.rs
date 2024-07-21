@@ -1,13 +1,14 @@
 use std::sync::Arc;
-use std::thread::sleep;
 use std::time::Duration;
-use warp::{Filter, hyper, Reply};
+use serde::Deserialize;
+use uuid::Uuid;
+use warp::{Filter, Reply};
+use crate::handlers::add_meal_items::{AddMealItemsHandler, AddMealItemsReq};
 use crate::handlers::add_order::{AddOrderHandler, AddOrderReq};
+use crate::handlers::query_meal_item::QueryMealItemHandler;
 use crate::handlers::query_order::QueryOrderHandler;
 use crate::libraries::thread_pool::ThreadPool;
-use crate::models::meal::MealItemStatus;
 use crate::models::menu::{Menu, MenuItem};
-use crate::models::order::Order;
 use crate::repositories::menu::MenuRepo;
 use crate::repositories::order::OrderRepo;
 
@@ -15,6 +16,11 @@ mod models;
 mod repositories;
 mod libraries;
 mod handlers;
+
+#[derive(Deserialize)]
+struct QueryOrderParams {
+    include_removed_items: bool,
+}
 
 #[tokio::main]
 async fn main() {
@@ -50,6 +56,8 @@ async fn main() {
     let pool = ThreadPool::new(2);
     let add_order_handler = Arc::new(AddOrderHandler::new(order_repo.clone(), pool.clone()));
     let query_order_handler = Arc::new(QueryOrderHandler::new(order_repo.clone(), pool.clone()));
+    let query_meal_item_handler = Arc::new(QueryMealItemHandler::new(order_repo.clone()));
+    let add_meal_items_handler = Arc::new(AddMealItemsHandler::new(order_repo.clone(), pool.clone()));
     // let result = add_order_handler.handle(AddOrderReq {
     //     table_id: 32,
     //     menu_items: vec![menu_item1.clone(), menu_item2.clone()],
@@ -82,13 +90,33 @@ async fn main() {
     let query_order = warp::get()
         .and(warp::path("query_order"))
         .and(warp::path::param())
-        .and_then(move |table_id: u32| {
+        .and(warp::query::<QueryOrderParams>()) // Query parameter
+        .and_then(move |table_id: u32, params: QueryOrderParams| {
             let handler = query_order_handler.clone();
-            async move { handler.handle(table_id) }
+            async move { handler.handle(table_id, params.include_removed_items) }
+        });
+
+    let query_meal_item = warp::get()
+        .and(warp::path("query_meal_item"))
+        .and(warp::path::param())
+        .and(warp::path::param())
+        .and_then(move |table_id: u32, meal_item_id: Uuid| {
+            let handler = query_meal_item_handler.clone();
+            async move { handler.handle(table_id, meal_item_id) }
+        });
+
+    let add_meal_items = warp::post()
+        .and(warp::path("add_meal_items"))
+        .and(warp::body::json())
+        .and_then(move |req: AddMealItemsReq| {
+            let handler = add_meal_items_handler.clone();
+            async move { handler.handle(req) }
         });
 
     let routes = add_order
-        .or(query_order);
+        .or(query_order)
+        .or(query_meal_item)
+        .or(add_meal_items);
 
     warp::serve(routes).run(([127, 0, 0, 1], 3030)).await;
 

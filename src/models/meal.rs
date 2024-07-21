@@ -1,3 +1,4 @@
+use std::fmt;
 use chrono::{DateTime, Utc};
 use uuid::Uuid;
 use rand::{Rng};
@@ -9,6 +10,17 @@ pub enum MealItemStatus {
     Received,
     Preparing,
     Completed,
+}
+
+impl fmt::Display for MealItemStatus {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let s = match self {
+            MealItemStatus::Received => "Received",
+            MealItemStatus::Preparing => "Preparing",
+            MealItemStatus::Completed => "Completed",
+        };
+        write!(f, "{}", s)
+    }
 }
 
 #[derive(Clone, Debug)]
@@ -29,7 +41,7 @@ impl MealItem {
             menu_item,
             creation_time: Utc::now(),
             update_time: Utc::now(),
-            cooking_time_in_min: rand::thread_rng().gen_range(5..=15), //5..=15
+            cooking_time_in_min: rand::thread_rng().gen_range(29..=30), //5..=15
             is_removed: false,
             status: MealItemStatus::Received,
         }

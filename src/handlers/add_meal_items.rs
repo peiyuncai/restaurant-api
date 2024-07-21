@@ -4,40 +4,44 @@ use std::time::Duration;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use crate::libraries::thread_pool::ThreadPool;
-use crate::models::meal::MealItemStatus;
+use crate::models::meal::{MealItem, MealItemStatus};
 use crate::models::menu::MenuItem;
 use crate::models::order::Order;
 use crate::repositories::order::OrderRepo;
 
 #[derive(Deserialize)]
-pub struct AddOrderReq {
+pub struct AddMealItemsReq {
     pub table_id: u32,
     pub menu_items: Vec<MenuItem>,
 }
 
 #[derive(Serialize)]
-pub struct AddOrderResp {
+pub struct AddMealItemResp {
     table_id: u32,
 }
 
-pub struct AddOrderHandler {
+pub struct AddMealItemsHandler {
     order_repo: Arc<OrderRepo>,
     thread_pool: Arc<Mutex<ThreadPool>>,
 }
 
-impl AddOrderHandler {
+impl AddMealItemsHandler {
     pub fn new(order_repo: Arc<OrderRepo>, thread_pool: Arc<Mutex<ThreadPool>>) -> Self {
-        AddOrderHandler {
+        AddMealItemsHandler {
             order_repo,
             thread_pool,
         }
     }
 
-    pub fn handle(&self, req: AddOrderReq) -> Result<impl warp::Reply, warp::Rejection> { //Result<impl warp::Reply, warp::Rejection>
-        let order = Order::new(req.table_id, req.menu_items);
-        self.order_repo.add(order.clone());
-        for meal_item_arc in order.get_meal_items() {
-            let meal_item = meal_item_arc.lock().unwrap();
+    pub fn handle(&self, req: AddMealItemsReq) -> Result<impl warp::Reply, warp::Rejection> { //Result<impl warp::Reply, warp::Rejection>
+        let mut meal_items = Vec::with_capacity(req.menu_items.len());
+        for menu_item in req.menu_items {
+            meal_items.push(MealItem::create(menu_item));
+        }
+
+        self.order_repo.add_order_meal_items(req.table_id, meal_items.clone());
+
+        for meal_item in meal_items.iter() {
             let meal_item_id = meal_item.id();
             let table_id = req.table_id;
             let order_repo_arc = Arc::clone(&self.order_repo);
@@ -61,7 +65,7 @@ impl AddOrderHandler {
             })
         }
 
-        let resp = AddOrderResp {
+        let resp = AddMealItemResp {
             table_id: req.table_id,
         };
         Ok(warp::reply::json(&resp))

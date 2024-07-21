@@ -38,16 +38,26 @@ impl Order {
             update_time: Utc::now(),
             // status: OrderStatus::Received,
         };
-        order.add_meal_items(menu_items);
+        order.add_meal_items_by_menu_items(menu_items);
         order
     }
 
-    pub fn add_meal_items(&mut self, menu_items: Vec<MenuItem>) -> bool {
+    pub fn add_meal_items_by_menu_items(&mut self, menu_items: Vec<MenuItem>) -> bool {
         for menu_item in menu_items.iter() {
             let meal_item = MealItem::create(menu_item.clone());
             self.total_price += meal_item.price();
             self.total_cooking_time_in_min += meal_item.cooking_time_in_min();
             self.meal_items.insert(meal_item.id(), Arc::new(Mutex::new(meal_item)));
+        }
+        self.update_time = Utc::now();
+        true
+    }
+
+    pub fn add_meal_items(&mut self, meal_items: Vec<MealItem>) -> bool {
+        for meal_item in meal_items.iter() {
+            self.total_price += meal_item.price();
+            self.total_cooking_time_in_min += meal_item.cooking_time_in_min();
+            self.meal_items.insert(meal_item.id(), Arc::new(Mutex::new(meal_item.clone())));
         }
         self.update_time = Utc::now();
         true
@@ -98,7 +108,7 @@ impl Order {
         self.order_id
     }
 
-    pub fn get_total_price(&self) -> f64{
+    pub fn get_total_price(&self) -> f64 {
         self.total_price
     }
 }
