@@ -13,12 +13,12 @@ Please check [swagger file](./swagger.yaml) for the complete contract
 | GET /meal-items/{table-id}/{meal-item-id} | get meal item                    |
 | DELETE /meal-items                        | delete meal items                |
 
-Use Postman would be easier for testing the APIs. Can find collections [here](./RAPI.postman_collection.json)
-Or there are curl examples. Can find them [here](./curl_examples)
+Use Postman would be easier for testing the APIs. Can find collections [here](./RAPI.postman_collection.json). 
+<br> Or there are curl examples. Can find them [here](./curl_examples)
 
 ### How to start application
-`cargo run` or
-`cargo run -- 4` (can change 4 to any number which is the size of chef thread pool)
+`cargo run` or 
+`cargo run -- 4` (can change 4 to any number which is the size of chef thread pool, default is 2)
 
 ### General Testing Scenarios: (Please find full contract in swagger)
 
