@@ -1,3 +1,4 @@
+use serde::Deserialize;
 use uuid::Uuid;
 
 #[derive(Clone, Debug)]
@@ -26,7 +27,7 @@ impl Menu {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Deserialize)]
 pub struct MenuItem {
     menu_item_id: Uuid,
     name: String,

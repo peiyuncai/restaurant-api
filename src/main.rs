@@ -11,6 +11,7 @@ use crate::repositories::order::OrderRepo;
 mod models;
 mod repositories;
 mod libraries;
+mod handlers;
 
 fn main() {
     println!("Hello, world!");

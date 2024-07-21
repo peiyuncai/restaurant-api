@@ -91,4 +91,8 @@ impl Order {
     pub fn get_table_id(&self) -> u32 {
         self.table_id
     }
+
+    pub fn get_order_id(&self) -> Uuid {
+        self.order_id
+    }
 }
