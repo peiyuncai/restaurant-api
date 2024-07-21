@@ -1,7 +1,7 @@
 use std::sync::{Arc, Mutex};
 use chrono::{DateTime, Utc};
 use dashmap::DashMap;
-use serde::{Deserialize, Serialize};
+use serde::{Serialize};
 use uuid::Uuid;
 use crate::models::meal::{MealItem, MealItemStatus};
 use crate::models::menu::MenuItem;
@@ -74,7 +74,7 @@ impl Order {
                     MealItemStatus::Preparing | MealItemStatus::Completed => {
                         non_removable_items.push(meal_item_id.clone());
                         continue;
-                    },
+                    }
                     _ => {}
                 }
                 println!("{} is removed", meal_item.id());
@@ -82,7 +82,7 @@ impl Order {
                 self.total_cooking_time_in_min -= meal_item.cooking_time_in_min();
 
                 meal_item.remove();
-            }else{
+            } else {
                 non_removable_items.push(meal_item_id.clone());
             }
         }

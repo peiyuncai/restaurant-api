@@ -1,13 +1,6 @@
-use std::sync::{Arc, Mutex};
-use std::thread::{sleep};
-use std::time::Duration;
-use serde::{Deserialize, Serialize};
-use uuid::Uuid;
-use warp::http::{status, StatusCode};
-use crate::libraries::thread_pool::ThreadPool;
-use crate::models::meal::MealItemStatus;
-use crate::models::menu::MenuItem;
-use crate::models::order::Order;
+use std::sync::{Arc};
+use serde::{Serialize};
+use warp::http::{StatusCode};
 use crate::repositories::order::OrderRepo;
 
 #[derive(Serialize)]

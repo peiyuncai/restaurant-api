@@ -2,11 +2,9 @@ use std::sync::{Arc, Mutex};
 use std::thread::{sleep};
 use std::time::Duration;
 use serde::{Deserialize, Serialize};
-use uuid::Uuid;
 use crate::libraries::thread_pool::ThreadPool;
 use crate::models::meal::{MealItem, MealItemStatus};
 use crate::models::menu::MenuItem;
-use crate::models::order::Order;
 use crate::repositories::order::OrderRepo;
 
 #[derive(Deserialize)]

@@ -2,7 +2,6 @@ use std::fmt;
 use chrono::{DateTime, Utc};
 use uuid::Uuid;
 use rand::{Rng};
-use serde::{Deserialize, Serialize};
 use crate::models::menu::MenuItem;
 
 #[derive(Clone, Copy, Debug)]

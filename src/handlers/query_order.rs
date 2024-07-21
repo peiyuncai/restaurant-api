@@ -98,14 +98,12 @@ struct QueryOrderResp {
 
 pub struct QueryOrderHandler {
     order_repo: Arc<OrderRepo>,
-    thread_pool: Arc<Mutex<ThreadPool>>,
 }
 
 impl QueryOrderHandler {
-    pub fn new(order_repo: Arc<OrderRepo>, thread_pool: Arc<Mutex<ThreadPool>>) -> Self {
+    pub fn new(order_repo: Arc<OrderRepo>) -> Self {
         QueryOrderHandler {
             order_repo,
-            thread_pool,
         }
     }
 

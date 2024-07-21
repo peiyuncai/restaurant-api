@@ -1,15 +1,9 @@
 use std::sync::{Arc, Mutex};
-use std::thread::{sleep};
-use std::time::Duration;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use warp::http::StatusCode;
 use warp::reply::json;
-use crate::handlers::remove_order::RemoveOrderResp;
 use crate::libraries::thread_pool::ThreadPool;
-use crate::models::meal::{MealItem, MealItemStatus};
-use crate::models::menu::MenuItem;
-use crate::models::order::Order;
 use crate::repositories::order::OrderRepo;
 
 #[derive(Deserialize)]
@@ -27,14 +21,12 @@ pub struct RemoveMealItemsResp {
 
 pub struct RemoveMealItemsHandler {
     order_repo: Arc<OrderRepo>,
-    thread_pool: Arc<Mutex<ThreadPool>>,
 }
 
 impl RemoveMealItemsHandler {
-    pub fn new(order_repo: Arc<OrderRepo>, thread_pool: Arc<Mutex<ThreadPool>>) -> Self {
+    pub fn new(order_repo: Arc<OrderRepo>) -> Self {
         RemoveMealItemsHandler {
             order_repo,
-            thread_pool,
         }
     }
 
