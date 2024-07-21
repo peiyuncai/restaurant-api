@@ -1,0 +1,29 @@
+@startuml
+
+class Order {
+  table_id: u32
+  order_id: Uuid
+  total_cooking_time_in_min: u32
+  total_price: f64
+  creation_time: DateTime
+  update_time: DateTime
+  add_meal_items()
+  get_meal_items()
+  remove_meal_items()
+}
+
+class MealItem {
+  meal_item_id: Uuid
+  menu_item: MenuItem
+  creation_time: DateTime<Utc>
+  update_time: DateTime<Utc>
+  cooking_time_in_min: u32
+  is_removed: bool
+  status: MealItemStatus
+  remove()
+  update_status()
+}
+
+Order "1" *-- "many" MealItem : contains
+
+@enduml
