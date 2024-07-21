@@ -54,7 +54,7 @@ async fn main() {
     let remove_meal_items_handler = Arc::new(RemoveMealItemsHandler::new(order_repo.clone()));
 
     let add_order = warp::post()
-        .and(warp::path("add_order"))
+        .and(warp::path("orders"))
         .and(warp::body::json())
         .and_then(move |req: AddOrderReq| {
             let handler = add_order_handler.clone();
@@ -62,7 +62,7 @@ async fn main() {
         });
 
     let query_order = warp::get()
-        .and(warp::path("query_order"))
+        .and(warp::path("orders"))
         .and(warp::path::param())
         .and(warp::query::<QueryOrderParams>()) // Query parameter
         .and_then(move |table_id: u32, params: QueryOrderParams| {
@@ -72,7 +72,7 @@ async fn main() {
 
 
     let query_meal_item = warp::get()
-        .and(warp::path("query_meal_item"))
+        .and(warp::path("meal-items"))
         .and(warp::path::param())
         .and(warp::path::param())
         .and_then(move |table_id: u32, meal_item_id: Uuid| {
@@ -81,23 +81,23 @@ async fn main() {
         });
 
     let add_meal_items = warp::post()
-        .and(warp::path("add_meal_items"))
+        .and(warp::path("meal-items"))
         .and(warp::body::json())
         .and_then(move |req: AddMealItemsReq| {
             let handler = add_meal_items_handler.clone();
             async move { handler.handle(req) }
         });
 
-    let remove_meal_items = warp::post()
-        .and(warp::path("remove_meal_items"))
+    let remove_meal_items = warp::delete()
+        .and(warp::path("meal-items"))
         .and(warp::body::json())
         .and_then(move |req: RemoveMealItemsReq| {
             let handler = remove_meal_items_handler.clone();
             async move { handler.handle(req) }
         });
 
-    let remove_order = warp::post()
-        .and(warp::path("remove_order"))
+    let remove_order = warp::delete()
+        .and(warp::path("orders"))
         .and(warp::path::param())
         .and_then(move |table_id: u32| {
             let handler = remove_order_handler.clone();
