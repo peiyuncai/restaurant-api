@@ -3,7 +3,7 @@ use uuid::Uuid;
 use rand::{Rng};
 use crate::models::menu::MenuItem;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum MealItemStatus {
     Received,
     Preparing,
@@ -28,7 +28,7 @@ impl MealItem {
             menu_item,
             creation_time: Utc::now(),
             update_time: Utc::now(),
-            cooking_time_in_min: rand::thread_rng().gen_range(5..=15),
+            cooking_time_in_min: rand::thread_rng().gen_range(1..=5), //5..=15
             is_removed: false,
             status: MealItemStatus::Received,
         }
@@ -53,6 +53,10 @@ impl MealItem {
 
     pub fn is_removed(&self) -> bool {
         self.is_removed
+    }
+
+    pub fn get_status(&self) -> MealItemStatus {
+        self.status
     }
 
     pub fn update_state(&mut self, status: MealItemStatus) {

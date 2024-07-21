@@ -14,10 +14,9 @@ impl MenuRepo {
         }
     }
 
-    pub fn get(&self, id: Uuid) -> Option<Menu> {
+    pub fn get(&self, id: Uuid) -> Option<Arc<Mutex<Menu>>> {
         self.menus.get(&id).map(|menu_arc| {
-            let menu = menu_arc.lock().unwrap();
-            menu.clone()
+            menu_arc.clone()
         })
     }
 

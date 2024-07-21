@@ -1,10 +1,11 @@
-use std::collections::HashMap;
+use std::sync::{Arc, Mutex};
 use chrono::{DateTime, Utc};
+use dashmap::DashMap;
 use uuid::Uuid;
-use crate::models::meal::MealItem;
+use crate::models::meal::{MealItem, MealItemStatus};
 use crate::models::menu::MenuItem;
 
-#[derive(Copy, Clone, Debug, PartialEq)]
+#[derive(Copy, Clone, Debug)]
 pub enum OrderStatus {
     Received,
     Preparing,
@@ -16,7 +17,7 @@ pub enum OrderStatus {
 pub struct Order {
     order_id: Uuid,
     table_id: u32,
-    meal_items: HashMap<Uuid, MealItem>,
+    meal_items: DashMap<Uuid, Arc<Mutex<MealItem>>>,
     total_cooking_time_in_min: u32,
     total_price: f64,
     creation_time: DateTime<Utc>,
@@ -37,15 +38,15 @@ impl Order {
             status: OrderStatus::Received,
         };
         order.add_meal_items(menu_items);
-        order.clone()
+        order
     }
 
     pub fn add_meal_items(&mut self, menu_items: Vec<MenuItem>) -> bool {
         for menu_item in menu_items.iter() {
             let meal_item = MealItem::create(menu_item.clone());
-            self.total_price = self.total_price + menu_item.price();
-            self.total_cooking_time_in_min = self.total_cooking_time_in_min + meal_item.cooking_time_in_min();
-            self.meal_items.insert(meal_item.id(), meal_item);
+            self.total_price += meal_item.price();
+            self.total_cooking_time_in_min += meal_item.cooking_time_in_min();
+            self.meal_items.insert(meal_item.id(), Arc::new(Mutex::new(meal_item)));
         }
         self.update_time = Utc::now();
         true
@@ -53,21 +54,30 @@ impl Order {
 
     pub fn remove_meal_items(&mut self, meal_item_ids: Vec<Uuid>) -> bool {
         for meal_item_id in meal_item_ids.iter() {
-            if let Some(meal_item) = self.meal_items.get_mut(meal_item_id) {
-                self.total_price = self.total_price - meal_item.price();
-                self.total_cooking_time_in_min = self.total_cooking_time_in_min - meal_item.cooking_time_in_min();
+            if let Some(meal_item) = self.meal_items.get(meal_item_id) {
+                let mut meal_item = meal_item.lock().unwrap();
+                match meal_item.get_status() {
+                    MealItemStatus::Preparing | MealItemStatus::Completed => return false,
+                    _ => {}
+                }
+                self.total_price -= meal_item.price();
+                self.total_cooking_time_in_min -= meal_item.cooking_time_in_min();
                 meal_item.remove();
             }
         }
         self.update_time = Utc::now();
-        if self.meal_items.values().filter(|m| !m.is_removed()).count() == 0 {
+        if self.meal_items.iter().filter(|m| !m.lock().unwrap().is_removed()).count() == 0 {
             self.status = OrderStatus::Canceled;
         }
         true
     }
 
-    pub fn get_meal_item_mut(&mut self, meal_item_id: Uuid) -> Option<&mut MealItem> {
-        self.meal_items.get_mut(&meal_item_id).map(|mut item| &mut *item)
+    pub fn get_meal_items(&self) -> Vec<Arc<Mutex<MealItem>>> {
+        self.meal_items.iter().map(|entry| entry.value().clone()).collect()
+    }
+
+    pub fn get_meal_item(&self, meal_item_id: Uuid) -> Option<Arc<Mutex<MealItem>>> {
+        self.meal_items.get(&meal_item_id).map(|item| item.clone())
     }
 
     pub fn get_status(&self) -> OrderStatus {
