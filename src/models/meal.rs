@@ -40,7 +40,7 @@ impl MealItem {
             menu_item,
             creation_time: Utc::now(),
             update_time: Utc::now(),
-            cooking_time_in_min: rand::thread_rng().gen_range(29..=30), //5..=15
+            cooking_time_in_min: rand::thread_rng().gen_range(5..=15), //5..=15
             is_removed: false,
             status: MealItemStatus::Received,
         }

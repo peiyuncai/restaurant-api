@@ -1,3 +1,5 @@
+use std::env;
+use std::str::FromStr;
 use std::sync::Arc;
 use serde::Deserialize;
 use uuid::Uuid;
@@ -25,7 +27,20 @@ struct QueryOrderParams {
 
 #[tokio::main]
 async fn main() {
-    println!("Hello, world!");
+    println!("Hello, Welcome to our restaurant!");
+
+    let args: Vec<String> = env::args().collect();
+
+    let mut pool_size: usize = 2; // Default value
+    if args.len() == 2 {
+        match args[1].parse::<usize>() {
+            Ok(size) => pool_size = size,
+            Err(_) => {
+                eprintln!("Invalid thread pool size: {}", args[1]);
+                std::process::exit(1);
+            }
+        }
+    }
 
     let menu_item1 = MenuItem::new(
         String::from("Burger"),
@@ -44,7 +59,7 @@ async fn main() {
     menu_repo.add(menu.clone());
 
     let order_repo = Arc::new(OrderRepo::new());
-    let pool = ThreadPool::new(2);
+    let pool = ThreadPool::new(pool_size);
     let add_order_handler = Arc::new(AddOrderHandler::new(order_repo.clone(), pool.clone()));
     let query_order_handler = Arc::new(QueryOrderHandler::new(order_repo.clone()));
     let remove_order_handler = Arc::new(RemoveOrderHandler::new(order_repo.clone()));

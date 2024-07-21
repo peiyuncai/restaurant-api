@@ -1,0 +1,161 @@
+{
+	"info": {
+		"_postman_id": "103f84b2-e550-44c7-a36b-56ee6b0c8a1e",
+		"name": "RAPI",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "16984636"
+	},
+	"item": [
+		{
+			"name": "/orders",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"table_id\": 2,\n    \"menu_items\": [\n        {\n            \"menu_item_id\": \"433e36e8-f049-475a-8fa9-0b5453770f1a\",\n            \"name\": \"Burger\",\n            \"price\": \"855\"\n        },\n        {\n            \"menu_item_id\": \"433e36e8-f049-475a-8fa9-0b5453770f1b\",\n            \"name\": \"Fries\",\n            \"price\": \"349\"\n        },\n        {\n            \"menu_item_id\": \"433e36e8-f049-475a-8fa9-0b5453770f1c\",\n            \"name\": \"Drink\",\n            \"price\": \"350\"\n        },\n        {\n            \"menu_item_id\": \"433e36e8-f049-475a-8fa9-0b5453770f1d\",\n            \"name\": \"Ice Cream\",\n            \"price\": \"477\"\n        }\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3030/orders",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3030",
+					"path": [
+						"orders"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/orders/{table-id}",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3030/orders/2?include_removed_items=true",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3030",
+					"path": [
+						"orders",
+						"2"
+					],
+					"query": [
+						{
+							"key": "include_removed_items",
+							"value": "true"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/meal-items/{table-id}/{meal-item-id}",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3030/meal-items/2/ee5c8739-10a8-4b56-9c3c-7104dbfd286f",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3030",
+					"path": [
+						"meal-items",
+						"2",
+						"ee5c8739-10a8-4b56-9c3c-7104dbfd286f"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/meal-items",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"table_id\": 2,\n    \"menu_items\": [\n        {\n            \"menu_item_id\": \"433e36e8-f049-475a-8fa9-0b5453770f1e\",\n            \"name\": \"tea\",\n            \"price\": \"123\"\n        },\n        {\n            \"menu_item_id\": \"433e36e8-f049-475a-8fa9-0b5453770f1f\",\n            \"name\": \"cheese cake\",\n            \"price\": \"749\"\n        }\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3030/meal-items",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3030",
+					"path": [
+						"meal-items"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/meal-items",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"table_id\": 2,\n    \"meal_item_ids\": [\n        \"ee5c8739-10a8-4b56-9c3c-7104dbfd286f\"\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3030/meal-items",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3030",
+					"path": [
+						"meal-items"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/orders/{table-id}",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3030/orders/2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3030",
+					"path": [
+						"orders",
+						"2"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
