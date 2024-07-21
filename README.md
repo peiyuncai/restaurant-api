@@ -74,17 +74,16 @@ sleep until time is elapsed.
 Before it goes to sleep, it will update meal_item's status as **preparing**, so client can't cancel it.
 After thread wakes up, it will then mark meal item status as **completed**, so client can't cancel it either.
 Other meal items queued in the channel whose status will be default **received**, so client can still cancel it.
-If thread get the meal from channel and connect db to check meal's status and find it's canceled, then it will return
+If thread get the meal from channel and connect db checking meal's status and find it's canceled, then it will return
 without further processing.
 There is cooking_time_upper_bound_in_min in order model which is the sum of non-removed and non-completed meal items'
 cooking time.
-Since there could be more than chef thread to process meal, the actual cooking time could be less, but we use
+Since there could be more than one chef thread to process meal, the actual cooking time could be less, but we use
 upper_bound here to denote max required time.
 Some Assumption: I assume we only add new order when order is finished for that table,
 which means there is no check in place and order can be overridden with new one when passing same table_id.
-However, there are checks on meal_items where it can't be canceled when it already started being prepared or already
-completed.
-Same for order, we can't remove it once check starts to prepare one of its meal items.
+However, there are checks on meal_items where it can't be canceled when it is being prepared or already
+completed. Same for order, we can't remove it once chef starts to prepare one of its meal items.
 
 ### Application Todo
 
