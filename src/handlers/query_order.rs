@@ -4,8 +4,16 @@ use uuid::Uuid;
 use warp::http::StatusCode;
 use crate::handlers::add_meal_items::{ErrResp, MESSAGE_ORDER_NOT_FOUND};
 use crate::models::meal::MealItemStatus;
-use crate::models::order::{Order, OrderStatus};
+use crate::models::order::{Order};
 use crate::repositories::order::OrderRepo;
+
+#[derive(Copy, Clone, Debug, Serialize)]
+pub enum OrderStatus {
+    Received,
+    Preparing,
+    Completed,
+    Canceled,
+}
 
 #[derive(Serialize)]
 struct MealItemResp {

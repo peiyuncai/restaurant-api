@@ -11,8 +11,6 @@ use crate::handlers::query_order::QueryOrderHandler;
 use crate::handlers::remove_meal_items::{RemoveMealItemsHandler, RemoveMealItemsReq};
 use crate::handlers::remove_order::{RemoveOrderHandler};
 use crate::libraries::thread_pool::ThreadPool;
-use crate::models::menu::{Menu, MenuItem};
-use crate::repositories::menu::MenuRepo;
 use crate::repositories::order::OrderRepo;
 
 mod models;
@@ -41,22 +39,6 @@ async fn main() {
             }
         }
     }
-
-    let menu_item1 = MenuItem::new(
-        String::from("Burger"),
-        8.55,
-    );
-    let menu_item2 = MenuItem::new(
-        String::from("Fries"),
-        3.49,
-    );
-    let menu = Menu::new(
-        String::from("fast food menu"),
-        vec![menu_item1.clone(), menu_item2.clone()],
-    );
-
-    let menu_repo = MenuRepo::new();
-    menu_repo.add(menu.clone());
 
     let order_repo = Arc::new(OrderRepo::new());
     let pool = ThreadPool::new(pool_size);

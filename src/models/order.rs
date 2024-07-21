@@ -1,18 +1,9 @@
 use std::sync::{Arc, Mutex};
 use chrono::{DateTime, Utc};
 use dashmap::DashMap;
-use serde::{Serialize};
 use uuid::Uuid;
 use crate::models::meal::{MealItem, MealItemStatus};
 use crate::models::menu::MenuItem;
-
-#[derive(Copy, Clone, Debug, Serialize)]
-pub enum OrderStatus {
-    Received,
-    Preparing,
-    Completed,
-    Canceled,
-}
 
 #[derive(Clone, Debug)]
 pub struct Order {
@@ -23,7 +14,6 @@ pub struct Order {
     total_price: f64,
     creation_time: DateTime<Utc>,
     update_time: DateTime<Utc>,
-    // status: OrderStatus,
 }
 
 impl Order {
@@ -100,14 +90,6 @@ impl Order {
     pub fn get_meal_item(&self, meal_item_id: Uuid) -> Option<Arc<Mutex<MealItem>>> {
         self.meal_items.get(&meal_item_id).map(|item| item.clone())
     }
-
-    // pub fn get_status(&self) -> OrderStatus {
-    //     self.status
-    // }
-    //
-    // pub fn update_status(&mut self, status: OrderStatus) {
-    //     self.status = status
-    // }
 
     pub fn get_table_id(&self) -> u32 {
         self.table_id
