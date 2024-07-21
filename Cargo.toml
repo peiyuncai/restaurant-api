@@ -10,3 +10,6 @@ rand = { version = "0.8.5", features = [] }
 serde = { version = "1.0.204", features = ["derive"] }
 uuid = { version = "1.10.0", features = ["v4", "serde"] }
 warp = "0.3.7"
+hyper = { version = "1.4.1", features = ["full"] }
+tokio = { version = "1.0.0", features = ["rt", "rt-multi-thread", "macros"] }
+reply = "0.0.1-beta.2"

@@ -9,7 +9,7 @@ pub struct ThreadPool {
 }
 
 impl ThreadPool {
-    pub fn new(size: usize) -> Self {
+    pub fn new(size: usize) -> Arc<Mutex<Self>> {
         let (sender, receiver) = mpsc::channel();
         let receiver = Arc::new(Mutex::new(receiver));
 
@@ -20,7 +20,7 @@ impl ThreadPool {
             workers.push(worker);
         }
 
-        ThreadPool { workers, sender }
+        Arc::new(Mutex::new(ThreadPool { workers, sender }))
     }
 
     pub fn execute<F>(&self, f: F)
@@ -32,8 +32,9 @@ impl ThreadPool {
     }
 
     pub fn join(&mut self) {
+        drop(self.sender.clone());
         for worker in &mut self.workers {
-            if let Some(thread) = worker.thread.take(){
+            if let Some(thread) = worker.thread.take() {
                 thread.join().unwrap();
             }
         }
