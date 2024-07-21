@@ -82,6 +82,8 @@ impl Order {
                 self.total_cooking_time_in_min -= meal_item.cooking_time_in_min();
 
                 meal_item.remove();
+            }else{
+                non_removable_items.push(meal_item_id.clone());
             }
         }
         self.update_time = Utc::now();

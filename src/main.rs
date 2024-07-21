@@ -8,6 +8,7 @@ use crate::handlers::add_order::{AddOrderHandler, AddOrderReq};
 use crate::handlers::query_meal_item::QueryMealItemHandler;
 use crate::handlers::query_order::QueryOrderHandler;
 use crate::handlers::remove_meal_items::{RemoveMealItemsHandler, RemoveMealItemsReq};
+use crate::handlers::remove_order::{RemoveOrderHandler, RemoveOrderResp};
 use crate::libraries::thread_pool::ThreadPool;
 use crate::models::menu::{Menu, MenuItem};
 use crate::repositories::menu::MenuRepo;
@@ -60,6 +61,7 @@ async fn main() {
     let query_meal_item_handler = Arc::new(QueryMealItemHandler::new(order_repo.clone()));
     let add_meal_items_handler = Arc::new(AddMealItemsHandler::new(order_repo.clone(), pool.clone()));
     let remove_meal_items_handler = Arc::new(RemoveMealItemsHandler::new(order_repo.clone(), pool.clone()));
+    let remove_order_handler = Arc::new(RemoveOrderHandler::new(order_repo.clone()));
     // let result = add_order_handler.handle(AddOrderReq {
     //     table_id: 32,
     //     menu_items: vec![menu_item1.clone(), menu_item2.clone()],
@@ -123,11 +125,20 @@ async fn main() {
             async move { handler.handle(req) }
         });
 
+    let remove_order = warp::post()
+        .and(warp::path("remove_order"))
+        .and(warp::path::param())
+        .and_then(move |table_id: u32| {
+            let handler = remove_order_handler.clone();
+            async move { handler.handle(table_id) }
+        });
+
     let routes = add_order
         .or(query_order)
         .or(query_meal_item)
         .or(add_meal_items)
-        .or(remove_meal_items);
+        .or(remove_meal_items)
+        .or(remove_order);
 
     warp::serve(routes).run(([127, 0, 0, 1], 3030)).await;
 

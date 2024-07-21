@@ -5,6 +5,7 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use warp::http::StatusCode;
 use warp::reply::json;
+use crate::handlers::remove_order::RemoveOrderResp;
 use crate::libraries::thread_pool::ThreadPool;
 use crate::models::meal::{MealItem, MealItemStatus};
 use crate::models::menu::MenuItem;
@@ -21,7 +22,7 @@ pub struct RemoveMealItemsReq {
 pub struct RemoveMealItemsResp {
     pub table_id: u32,
     pub non_removable_meal_item_ids: Vec<Uuid>,
-    pub reason: String,
+    pub message: String,
 }
 
 pub struct RemoveMealItemsHandler {
@@ -39,11 +40,27 @@ impl RemoveMealItemsHandler {
 
     pub fn handle(&self, req: RemoveMealItemsReq) -> Result<impl warp::Reply, warp::Rejection> { //Result<impl warp::Reply, warp::Rejection>
         let ids = self.order_repo.remove_order_meal_items(req.table_id, req.meal_item_ids);
-        let resp = RemoveMealItemsResp {
-            table_id: req.table_id,
-            non_removable_meal_item_ids: ids,
-            reason: "selected meal items are already started preparing or completed".to_string(),
-        };
-        Ok(warp::reply::json(&resp))
+        if ids.is_empty() {
+            let success_resp = RemoveMealItemsResp {
+                table_id: req.table_id,
+                non_removable_meal_item_ids: ids,
+                message: "All specified items have been removed successfully.".to_string(),
+
+            };
+            Ok(warp::reply::with_status(
+                warp::reply::json(&success_resp),
+                StatusCode::OK,
+            ))
+        } else {
+            let error_resp = RemoveMealItemsResp {
+                table_id: req.table_id,
+                non_removable_meal_item_ids: ids,
+                message: "Some items could not be removed as they are already started preparing, completed, or not found.".to_string(),
+            };
+            Ok(warp::reply::with_status(
+                json(&error_resp),
+                StatusCode::CONFLICT,
+            ))
+        }
     }
 }
