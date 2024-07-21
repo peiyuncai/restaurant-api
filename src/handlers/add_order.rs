@@ -3,10 +3,10 @@ use std::thread::{sleep};
 use std::time::Duration;
 use serde::{Deserialize, Serialize};
 use warp::http::StatusCode;
-use crate::handlers::add_meal_items::ErrResp;
-use crate::handlers::query_order::OrderResp;
+use crate::handlers::add_meal_items::{ErrResp, MenuItemReq};
+use crate::handlers::query_order::{convert_price_from_string, OrderResp};
 use crate::libraries::thread_pool::ThreadPool;
-use crate::models::meal::MealItemStatus;
+use crate::models::meal::{MealItemStatus};
 use crate::models::menu::MenuItem;
 use crate::models::order::Order;
 use crate::repositories::order::OrderRepo;
@@ -14,7 +14,7 @@ use crate::repositories::order::OrderRepo;
 #[derive(Deserialize)]
 pub struct AddOrderReq {
     pub table_id: u32,
-    pub menu_items: Vec<MenuItem>,
+    pub menu_items: Vec<MenuItemReq>,
 }
 
 #[derive(Serialize)]
@@ -36,7 +36,17 @@ impl AddOrderHandler {
     }
 
     pub fn handle(&self, req: AddOrderReq) -> Result<impl warp::Reply, warp::Rejection> {
-        let order = Order::new(req.table_id, req.menu_items);
+        let mut menu_items = Vec::with_capacity(req.menu_items.len());
+        for menu_item_req in req.menu_items {
+            let menu_item = MenuItem::create(
+                menu_item_req.menu_item_id,
+                menu_item_req.name,
+                convert_price_from_string(menu_item_req.price),
+            );
+            menu_items.push(menu_item);
+        }
+
+        let order = Order::new(req.table_id, menu_items.clone());
         self.order_repo.add(order.clone());
         for meal_item_arc in order.get_meal_items() {
             let meal_item = meal_item_arc.lock().unwrap();

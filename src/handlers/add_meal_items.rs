@@ -2,8 +2,9 @@ use std::sync::{Arc, Mutex};
 use std::thread::{sleep};
 use std::time::Duration;
 use serde::{Deserialize, Serialize};
+use uuid::Uuid;
 use warp::http::StatusCode;
-use crate::handlers::query_order::OrderResp;
+use crate::handlers::query_order::{convert_price_from_string, OrderResp};
 use crate::libraries::thread_pool::ThreadPool;
 use crate::models::meal::{MealItem, MealItemStatus};
 use crate::models::menu::MenuItem;
@@ -18,9 +19,16 @@ pub struct ErrResp {
 }
 
 #[derive(Deserialize)]
+pub struct MenuItemReq {
+    pub menu_item_id: Uuid,
+    pub name: String,
+    pub price: String,
+}
+
+#[derive(Deserialize)]
 pub struct AddMealItemsReq {
     pub table_id: u32,
-    pub menu_items: Vec<MenuItem>,
+    pub menu_items: Vec<MenuItemReq>,
 }
 
 #[derive(Serialize)]
@@ -43,7 +51,13 @@ impl AddMealItemsHandler {
 
     pub fn handle(&self, req: AddMealItemsReq) -> Result<impl warp::Reply, warp::Rejection> {
         let mut meal_items = Vec::with_capacity(req.menu_items.len());
-        for menu_item in req.menu_items {
+        for menu_item_req in req.menu_items {
+            let menu_item = MenuItem::create(
+                menu_item_req.menu_item_id,
+                menu_item_req.name,
+                convert_price_from_string(menu_item_req.price),
+            );
+
             meal_items.push(MealItem::create(menu_item));
         }
 

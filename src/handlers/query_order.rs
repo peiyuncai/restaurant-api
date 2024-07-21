@@ -96,6 +96,12 @@ pub fn convert_price(price: f64) -> String {
     price_in_cents.to_string()
 }
 
+pub fn convert_price_from_string(price: String) -> f64 {
+    let price_in_cents = price.parse().unwrap_or(0.0);
+    let price: f64 = price_in_cents / 100.0;
+    price
+}
+
 #[derive(Serialize)]
 struct QueryOrderResp {
     order: OrderResp,

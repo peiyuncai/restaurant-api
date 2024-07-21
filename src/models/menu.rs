@@ -43,6 +43,14 @@ impl MenuItem {
         }
     }
 
+    pub fn create(id: Uuid, name: String, price: f64) -> Self {
+        MenuItem {
+            menu_item_id: id,
+            name,
+            price,
+        }
+    }
+
     pub fn price(&self) -> f64 {
         self.price
     }
