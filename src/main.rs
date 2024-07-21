@@ -3,6 +3,7 @@ use std::thread::sleep;
 use std::time::Duration;
 use warp::{Filter, hyper, Reply};
 use crate::handlers::add_order::{AddOrderHandler, AddOrderReq};
+use crate::handlers::query_order::QueryOrderHandler;
 use crate::libraries::thread_pool::ThreadPool;
 use crate::models::meal::MealItemStatus;
 use crate::models::menu::{Menu, MenuItem};
@@ -48,6 +49,7 @@ async fn main() {
 
     let pool = ThreadPool::new(2);
     let add_order_handler = Arc::new(AddOrderHandler::new(order_repo.clone(), pool.clone()));
+    let query_order_handler = Arc::new(QueryOrderHandler::new(order_repo.clone(), pool.clone()));
     // let result = add_order_handler.handle(AddOrderReq {
     //     table_id: 32,
     //     menu_items: vec![menu_item1.clone(), menu_item2.clone()],
@@ -77,7 +79,17 @@ async fn main() {
             async move { handler.handle(req) }
         });
 
-    let routes = add_order;
+    let query_order = warp::get()
+        .and(warp::path("query_order"))
+        .and(warp::path::param())
+        .and_then(move |table_id: u32| {
+            let handler = query_order_handler.clone();
+            async move { handler.handle(table_id) }
+        });
+
+    let routes = add_order
+        .or(query_order);
+
     warp::serve(routes).run(([127, 0, 0, 1], 3030)).await;
 
     // let order_repo_arc = Arc::clone(&order_repo);

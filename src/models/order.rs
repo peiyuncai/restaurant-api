@@ -1,11 +1,12 @@
 use std::sync::{Arc, Mutex};
 use chrono::{DateTime, Utc};
 use dashmap::DashMap;
+use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use crate::models::meal::{MealItem, MealItemStatus};
 use crate::models::menu::MenuItem;
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, Serialize)]
 pub enum OrderStatus {
     Received,
     Preparing,
@@ -22,7 +23,7 @@ pub struct Order {
     total_price: f64,
     creation_time: DateTime<Utc>,
     update_time: DateTime<Utc>,
-    status: OrderStatus,
+    // status: OrderStatus,
 }
 
 impl Order {
@@ -35,7 +36,7 @@ impl Order {
             total_price: 0.0,
             creation_time: Utc::now(),
             update_time: Utc::now(),
-            status: OrderStatus::Received,
+            // status: OrderStatus::Received,
         };
         order.add_meal_items(menu_items);
         order
@@ -62,13 +63,14 @@ impl Order {
                 }
                 self.total_price -= meal_item.price();
                 self.total_cooking_time_in_min -= meal_item.cooking_time_in_min();
+
                 meal_item.remove();
             }
         }
         self.update_time = Utc::now();
-        if self.meal_items.iter().filter(|m| !m.lock().unwrap().is_removed()).count() == 0 {
-            self.status = OrderStatus::Canceled;
-        }
+        // if self.meal_items.iter().filter(|m| !m.lock().unwrap().is_removed()).count() == 0 {
+        //     self.status = OrderStatus::Canceled;
+        // }
         true
     }
 
@@ -80,13 +82,13 @@ impl Order {
         self.meal_items.get(&meal_item_id).map(|item| item.clone())
     }
 
-    pub fn get_status(&self) -> OrderStatus {
-        self.status
-    }
-
-    pub fn update_status(&mut self, status: OrderStatus) {
-        self.status = status
-    }
+    // pub fn get_status(&self) -> OrderStatus {
+    //     self.status
+    // }
+    //
+    // pub fn update_status(&mut self, status: OrderStatus) {
+    //     self.status = status
+    // }
 
     pub fn get_table_id(&self) -> u32 {
         self.table_id
@@ -94,5 +96,9 @@ impl Order {
 
     pub fn get_order_id(&self) -> Uuid {
         self.order_id
+    }
+
+    pub fn get_total_price(&self) -> f64{
+        self.total_price
     }
 }

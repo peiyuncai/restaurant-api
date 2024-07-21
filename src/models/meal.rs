@@ -1,6 +1,7 @@
 use chrono::{DateTime, Utc};
 use uuid::Uuid;
 use rand::{Rng};
+use serde::{Deserialize, Serialize};
 use crate::models::menu::MenuItem;
 
 #[derive(Clone, Copy, Debug)]
@@ -28,7 +29,7 @@ impl MealItem {
             menu_item,
             creation_time: Utc::now(),
             update_time: Utc::now(),
-            cooking_time_in_min: rand::thread_rng().gen_range(1..=5), //5..=15
+            cooking_time_in_min: rand::thread_rng().gen_range(5..=15), //5..=15
             is_removed: false,
             status: MealItemStatus::Received,
         }
@@ -62,5 +63,9 @@ impl MealItem {
     pub fn update_state(&mut self, status: MealItemStatus) {
         self.status = status;
         self.update_time = Utc::now();
+    }
+
+    pub fn get_name(&self) -> String {
+        self.menu_item.get_name()
     }
 }

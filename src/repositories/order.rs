@@ -2,7 +2,7 @@ use std::sync::{Arc, Mutex};
 use dashmap::DashMap;
 use uuid::Uuid;
 use crate::models::meal::{MealItem, MealItemStatus};
-use crate::models::order::{Order, OrderStatus};
+use crate::models::order::{Order};
 
 pub struct OrderRepo {
     pub orders: Arc<DashMap<u32, Arc<Mutex<Order>>>>,
@@ -35,11 +35,11 @@ impl OrderRepo {
 
     pub fn update_order_meal_item_status(&self, table_id: u32, meal_item_id: Uuid, meal_item_status: MealItemStatus) -> bool {
         if let Some(order_arc) = self.orders.get(&table_id) {
-            let mut order = order_arc.lock().unwrap();
-            match order.get_status() {
-                OrderStatus::Received => order.update_status(OrderStatus::Preparing),
-                _ => {}
-            }
+            let order = order_arc.lock().unwrap();
+            // match order.get_status() {
+            //     OrderStatus::Received => order.update_status(OrderStatus::Preparing),
+            //     _ => {}
+            // }
 
             if let Some(meal_item_arc) = order.get_meal_item(meal_item_id) {
                 let mut meal_item = meal_item_arc.lock().unwrap();
