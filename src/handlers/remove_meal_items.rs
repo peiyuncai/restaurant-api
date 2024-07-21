@@ -3,6 +3,7 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use warp::http::StatusCode;
 use warp::reply::json;
+use crate::handlers::add_meal_items::{ErrResp, MESSAGE_ITEM_NOT_FOUND};
 use crate::repositories::order::OrderRepo;
 
 #[derive(Deserialize)]
@@ -30,7 +31,17 @@ impl RemoveMealItemsHandler {
     }
 
     pub fn handle(&self, req: RemoveMealItemsReq) -> Result<impl warp::Reply, warp::Rejection> {
-        let ids = self.order_repo.remove_order_meal_items(req.table_id, req.meal_item_ids);
+        let (ids, existed) = self.order_repo.remove_order_meal_items(req.table_id, req.meal_item_ids);
+        if !existed {
+            let resp = ErrResp {
+                message: MESSAGE_ITEM_NOT_FOUND.to_string(),
+            };
+            return Ok(warp::reply::with_status(
+                warp::reply::json(&resp),
+                StatusCode::NOT_FOUND,
+            ));
+        }
+
         if ids.is_empty() {
             let success_resp = RemoveMealItemsResp {
                 table_id: req.table_id,
@@ -46,7 +57,7 @@ impl RemoveMealItemsHandler {
             let error_resp = RemoveMealItemsResp {
                 table_id: req.table_id,
                 non_removable_meal_item_ids: ids,
-                message: "Some items could not be removed as they are already started preparing, completed, or not found.".to_string(),
+                message: "Some items could not be removed as they are already started preparing, or completed.".to_string(),
             };
             Ok(warp::reply::with_status(
                 json(&error_resp),

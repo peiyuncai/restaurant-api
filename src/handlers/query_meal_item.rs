@@ -1,6 +1,8 @@
 use std::sync::{Arc};
 use serde::Serialize;
 use uuid::Uuid;
+use warp::http::StatusCode;
+use crate::handlers::add_meal_items::{ErrResp, MESSAGE_ITEM_NOT_FOUND};
 use crate::handlers::query_order::convert_price;
 use crate::models::meal::{MealItem};
 use crate::repositories::order::OrderRepo;
@@ -51,9 +53,18 @@ impl QueryMealItemHandler {
             let resp = QueryMealItemResp {
                 meal_item: MealItemResp::new(item),
             };
-            Ok(warp::reply::json(&resp))
+            Ok(warp::reply::with_status(
+                warp::reply::json(&resp),
+                StatusCode::OK, // or StatusCode::NOT_FOUND depending on your logic
+            ))
         } else {
-            Err(warp::reject::not_found())
+            let resp = ErrResp {
+                message: MESSAGE_ITEM_NOT_FOUND.to_string(),
+            };
+            Ok(warp::reply::with_status(
+                warp::reply::json(&resp),
+                StatusCode::NOT_FOUND,
+            ))
         }
     }
 }

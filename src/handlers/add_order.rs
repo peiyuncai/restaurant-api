@@ -2,6 +2,9 @@ use std::sync::{Arc, Mutex};
 use std::thread::{sleep};
 use std::time::Duration;
 use serde::{Deserialize, Serialize};
+use warp::http::StatusCode;
+use crate::handlers::add_meal_items::ErrResp;
+use crate::handlers::query_order::OrderResp;
 use crate::libraries::thread_pool::ThreadPool;
 use crate::models::meal::MealItemStatus;
 use crate::models::menu::MenuItem;
@@ -16,7 +19,7 @@ pub struct AddOrderReq {
 
 #[derive(Serialize)]
 pub struct AddOrderResp {
-    table_id: u32,
+    order: OrderResp,
 }
 
 pub struct AddOrderHandler {
@@ -60,9 +63,22 @@ impl AddOrderHandler {
             })
         }
 
-        let resp = AddOrderResp {
-            table_id: req.table_id,
+        if let Some(order) = self.order_repo.get_order_by_table_id(req.table_id) {
+            let resp = AddOrderResp {
+                order: OrderResp::new(order.lock().unwrap().clone(), false),
+            };
+            return Ok(warp::reply::with_status(
+                warp::reply::json(&resp),
+                StatusCode::OK,
+            ));
+        }
+
+        let resp = ErrResp {
+            message: StatusCode::INTERNAL_SERVER_ERROR.to_string()
         };
-        Ok(warp::reply::json(&resp))
+        Ok(warp::reply::with_status(
+            warp::reply::json(&resp),
+            StatusCode::INTERNAL_SERVER_ERROR,
+        ))
     }
 }

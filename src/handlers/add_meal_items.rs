@@ -9,6 +9,14 @@ use crate::models::meal::{MealItem, MealItemStatus};
 use crate::models::menu::MenuItem;
 use crate::repositories::order::OrderRepo;
 
+pub const MESSAGE_ORDER_NOT_FOUND: &str = "There are no orders associated with this table";
+pub const MESSAGE_ITEM_NOT_FOUND: &str = "The specified meal items can't be found for this table";
+
+#[derive(Serialize)]
+pub struct ErrResp {
+    pub message: String,
+}
+
 #[derive(Deserialize)]
 pub struct AddMealItemsReq {
     pub table_id: u32,
@@ -39,7 +47,16 @@ impl AddMealItemsHandler {
             meal_items.push(MealItem::create(menu_item));
         }
 
-        self.order_repo.add_order_meal_items(req.table_id, meal_items.clone());
+        let existed = self.order_repo.add_order_meal_items(req.table_id, meal_items.clone());
+        if !existed {
+            let resp = ErrResp {
+                message: MESSAGE_ORDER_NOT_FOUND.to_string(),
+            };
+            return Ok(warp::reply::with_status(
+                warp::reply::json(&resp),
+                StatusCode::NOT_FOUND, // or StatusCode::NOT_FOUND depending on your logic
+            ));
+        }
 
         for meal_item in meal_items.iter() {
             let meal_item_id = meal_item.id();
@@ -76,9 +93,12 @@ impl AddMealItemsHandler {
             ));
         }
 
+        let resp = ErrResp {
+            message: StatusCode::INTERNAL_SERVER_ERROR.to_string()
+        };
         Ok(warp::reply::with_status(
-            warp::reply::json(&""),
-            StatusCode::INTERNAL_SERVER_ERROR, // or StatusCode::NOT_FOUND depending on your logic
+            warp::reply::json(&resp),
+            StatusCode::INTERNAL_SERVER_ERROR,
         ))
     }
 }

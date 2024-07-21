@@ -1,6 +1,7 @@
 use std::sync::{Arc};
 use serde::{Serialize};
 use warp::http::{StatusCode};
+use crate::handlers::add_meal_items::{ErrResp, MESSAGE_ORDER_NOT_FOUND};
 use crate::repositories::order::OrderRepo;
 
 #[derive(Serialize)]
@@ -21,20 +22,34 @@ impl RemoveOrderHandler {
     }
 
     pub fn handle(&self, table_id: u32) -> Result<impl warp::Reply, warp::Rejection> {
-        let result = self.order_repo.remove_order(table_id);
+        let (result, existed) = self.order_repo.remove_order(table_id);
+        if !existed {
+            let resp = ErrResp {
+                message: MESSAGE_ORDER_NOT_FOUND.to_string(),
+            };
+            return Ok(warp::reply::with_status(
+                warp::reply::json(&resp),
+                StatusCode::NOT_FOUND,
+            ));
+        }
+
         if result {
+            let resp = RemoveOrderResp {
+                table_id,
+                message: "Success".to_string(),
+            };
             Ok(warp::reply::with_status(
-                warp::reply::json(&"Success"), // You can use a static string for success
+                warp::reply::json(&resp), // You can use a static string for success
                 StatusCode::OK,
             ))
         } else {
             let resp = RemoveOrderResp {
                 table_id,
-                message: "Order cannot be removed as it is already started preparing, completed, or not found".to_string(),
+                message: "Order cannot be removed as it is already started preparing, or completed".to_string(),
             };
             Ok(warp::reply::with_status(
                 warp::reply::json(&resp),
-                StatusCode::CONFLICT, // or StatusCode::NOT_FOUND depending on your logic
+                StatusCode::CONFLICT,
             ))
         }
     }

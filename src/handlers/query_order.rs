@@ -1,6 +1,8 @@
 use std::sync::{Arc};
 use serde::Serialize;
 use uuid::Uuid;
+use warp::http::StatusCode;
+use crate::handlers::add_meal_items::{ErrResp, MESSAGE_ORDER_NOT_FOUND};
 use crate::models::meal::MealItemStatus;
 use crate::models::order::{Order, OrderStatus};
 use crate::repositories::order::OrderRepo;
@@ -12,6 +14,7 @@ struct MealItemResp {
     price: String,
     status: String,
     cooking_time_in_min: u32,
+    is_remove: bool,
 }
 
 #[derive(Serialize)]
@@ -48,6 +51,7 @@ impl OrderResp {
                     price: convert_price(item.price()),
                     cooking_time_in_min: item.cooking_time_in_min(),
                     status: item.get_status().to_string(),
+                    is_remove: item.is_removed(),
                 };
                 order_resp.meal_items.push(item_resp);
             }
@@ -114,9 +118,18 @@ impl QueryOrderHandler {
             let resp = QueryOrderResp {
                 order: OrderResp::new(order, include_removed_items),
             };
-            Ok(warp::reply::json(&resp))
+            Ok(warp::reply::with_status(
+                warp::reply::json(&resp),
+                StatusCode::OK, // or StatusCode::NOT_FOUND depending on your logic
+            ))
         } else {
-            Err(warp::reject::not_found())
+            let resp = ErrResp {
+                message: MESSAGE_ORDER_NOT_FOUND.to_string(),
+            };
+            Ok(warp::reply::with_status(
+                warp::reply::json(&resp),
+                StatusCode::NOT_FOUND,
+            ))
         }
     }
 }
