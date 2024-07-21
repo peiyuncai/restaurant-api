@@ -20,7 +20,7 @@ impl RemoveOrderHandler {
         }
     }
 
-    pub fn handle(&self, table_id: u32) -> Result<impl warp::Reply, warp::Rejection> { //Result<impl warp::Reply, warp::Rejection>
+    pub fn handle(&self, table_id: u32) -> Result<impl warp::Reply, warp::Rejection> {
         let result = self.order_repo.remove_order(table_id);
         if result {
             Ok(warp::reply::with_status(

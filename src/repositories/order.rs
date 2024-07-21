@@ -36,16 +36,13 @@ impl OrderRepo {
     pub fn update_order_meal_item_status(&self, table_id: u32, meal_item_id: Uuid, meal_item_status: MealItemStatus) -> bool {
         if let Some(order_arc) = self.orders.get(&table_id) {
             let order = order_arc.lock().unwrap();
-            // match order.get_status() {
-            //     OrderStatus::Received => order.update_status(OrderStatus::Preparing),
-            //     _ => {}
-            // }
 
             if let Some(meal_item_arc) = order.get_meal_item(meal_item_id) {
                 let mut meal_item = meal_item_arc.lock().unwrap();
                 meal_item.update_state(meal_item_status);
+                return true;
             }
-            true
+            false
         } else {
             false
         }

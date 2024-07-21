@@ -1,9 +1,8 @@
-use std::sync::{Arc, Mutex};
+use std::sync::{Arc};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use warp::http::StatusCode;
 use warp::reply::json;
-use crate::libraries::thread_pool::ThreadPool;
 use crate::repositories::order::OrderRepo;
 
 #[derive(Deserialize)]
@@ -30,7 +29,7 @@ impl RemoveMealItemsHandler {
         }
     }
 
-    pub fn handle(&self, req: RemoveMealItemsReq) -> Result<impl warp::Reply, warp::Rejection> { //Result<impl warp::Reply, warp::Rejection>
+    pub fn handle(&self, req: RemoveMealItemsReq) -> Result<impl warp::Reply, warp::Rejection> {
         let ids = self.order_repo.remove_order_meal_items(req.table_id, req.meal_item_ids);
         if ids.is_empty() {
             let success_resp = RemoveMealItemsResp {

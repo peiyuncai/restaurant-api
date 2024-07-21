@@ -2,6 +2,8 @@ use std::sync::{Arc, Mutex};
 use std::thread::{sleep};
 use std::time::Duration;
 use serde::{Deserialize, Serialize};
+use warp::http::StatusCode;
+use crate::handlers::query_order::OrderResp;
 use crate::libraries::thread_pool::ThreadPool;
 use crate::models::meal::{MealItem, MealItemStatus};
 use crate::models::menu::MenuItem;
@@ -14,8 +16,8 @@ pub struct AddMealItemsReq {
 }
 
 #[derive(Serialize)]
-pub struct AddMealItemResp {
-    table_id: u32,
+pub struct AddMealItemsResp {
+    order: OrderResp,
 }
 
 pub struct AddMealItemsHandler {
@@ -31,7 +33,7 @@ impl AddMealItemsHandler {
         }
     }
 
-    pub fn handle(&self, req: AddMealItemsReq) -> Result<impl warp::Reply, warp::Rejection> { //Result<impl warp::Reply, warp::Rejection>
+    pub fn handle(&self, req: AddMealItemsReq) -> Result<impl warp::Reply, warp::Rejection> {
         let mut meal_items = Vec::with_capacity(req.menu_items.len());
         for menu_item in req.menu_items {
             meal_items.push(MealItem::create(menu_item));
@@ -55,6 +57,7 @@ impl AddMealItemsHandler {
                     println!("start preparing {}", meal_item_id);
                     order_repo_arc.update_order_meal_item_status(table_id, meal_item_id, MealItemStatus::Preparing);
 
+                    //Thread goes to sleep to simulate busy cooking the meal and can't take another meal until finishing preparing current meal
                     sleep(Duration::from_secs(cooking_time_in_min as u64));
 
                     order_repo_arc.update_order_meal_item_status(table_id, meal_item_id, MealItemStatus::Completed);
@@ -63,9 +66,19 @@ impl AddMealItemsHandler {
             })
         }
 
-        let resp = AddMealItemResp {
-            table_id: req.table_id,
-        };
-        Ok(warp::reply::json(&resp))
+        if let Some(order) = self.order_repo.get_order_by_table_id(req.table_id) {
+            let resp = AddMealItemsResp {
+                order: OrderResp::new(order.lock().unwrap().clone(), false),
+            };
+            return Ok(warp::reply::with_status(
+                warp::reply::json(&resp),
+                StatusCode::OK,
+            ));
+        }
+
+        Ok(warp::reply::with_status(
+            warp::reply::json(&""),
+            StatusCode::INTERNAL_SERVER_ERROR, // or StatusCode::NOT_FOUND depending on your logic
+        ))
     }
 }

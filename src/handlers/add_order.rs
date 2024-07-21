@@ -32,7 +32,7 @@ impl AddOrderHandler {
         }
     }
 
-    pub fn handle(&self, req: AddOrderReq) -> Result<impl warp::Reply, warp::Rejection> { //Result<impl warp::Reply, warp::Rejection>
+    pub fn handle(&self, req: AddOrderReq) -> Result<impl warp::Reply, warp::Rejection> {
         let order = Order::new(req.table_id, req.menu_items);
         self.order_repo.add(order.clone());
         for meal_item_arc in order.get_meal_items() {

@@ -1,7 +1,6 @@
-use std::sync::{Arc, Mutex};
+use std::sync::{Arc};
 use serde::Serialize;
 use uuid::Uuid;
-use crate::libraries::thread_pool::ThreadPool;
 use crate::models::meal::MealItemStatus;
 use crate::models::order::{Order, OrderStatus};
 use crate::repositories::order::OrderRepo;
@@ -11,20 +10,20 @@ struct MealItemResp {
     meal_item_id: Uuid,
     name: String,
     price: String,
+    status: String,
+    cooking_time_in_min: u32,
 }
 
 #[derive(Serialize)]
-struct OrderResp {
+pub struct OrderResp {
     remaining_cooking_time_upper_bound_in_min: u32,
     total_price: String,
     status: OrderStatus,
     meal_items: Vec<MealItemResp>,
 }
 
-
 impl OrderResp {
     pub fn new(order: Order, include_removed_items: bool) -> Self {
-        println!("{} include removed items", include_removed_items);
         let mut order_resp = OrderResp {
             total_price: "".to_string(),
             remaining_cooking_time_upper_bound_in_min: 0,
@@ -47,6 +46,8 @@ impl OrderResp {
                     meal_item_id: item.id(),
                     name: item.get_name(),
                     price: convert_price(item.price()),
+                    cooking_time_in_min: item.cooking_time_in_min(),
+                    status: item.get_status().to_string(),
                 };
                 order_resp.meal_items.push(item_resp);
             }
