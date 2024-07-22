@@ -1,4 +1,4 @@
-use std::sync::{Arc, Mutex};
+use std::sync::{Arc};
 use std::thread::{sleep};
 use std::time::Duration;
 use serde::{Deserialize, Serialize};

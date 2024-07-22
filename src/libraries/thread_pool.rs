@@ -3,6 +3,8 @@ use std::sync::mpsc::Sender;
 use crate::libraries::job::Job;
 use crate::libraries::worker::Worker;
 
+// F: FnOnce() + Send + 'static; means that F is a function or closure that can be executed once,
+// can be sent between threads (Send), and does not capture any non-static references ('static).
 pub trait ThreadPoolDyn: Send + Sync {
     fn execute(&self, job: Box<dyn FnOnce() + Send + 'static>);
 }

@@ -1,5 +1,5 @@
 use std::sync::{Arc};
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use warp::http::StatusCode;
 use crate::handlers::error::{ErrResp, MESSAGE_ORDER_NOT_FOUND};
@@ -7,7 +7,7 @@ use crate::models::meal::MealItemStatus;
 use crate::models::order::{Order, OrderStatus};
 use crate::repositories::order::OrderRepo;
 
-#[derive(Serialize)]
+#[derive(Serialize, Deserialize, Debug)]
 struct MealItemResp {
     meal_item_id: Uuid,
     name: String,
@@ -17,7 +17,7 @@ struct MealItemResp {
     is_remove: bool,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct OrderResp {
     remaining_cooking_time_upper_bound_in_min: u32,
     total_price: String,
