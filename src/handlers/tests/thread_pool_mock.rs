@@ -13,7 +13,7 @@ impl MockThreadPool {
     pub fn new(size: usize) -> Self {
         MockThreadPool {
             counter: Arc::new(AtomicUsize::new(0)),
-            barrier: Arc::new(Barrier::new(size)),
+            barrier: Arc::new(Barrier::new(size + 1)), //plus main thread
         }
     }
 
