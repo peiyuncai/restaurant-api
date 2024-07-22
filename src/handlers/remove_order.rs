@@ -1,7 +1,7 @@
 use std::sync::{Arc};
 use serde::{Serialize};
 use warp::http::{StatusCode};
-use crate::handlers::error::{ErrResp, MESSAGE_ORDER_NOT_FOUND};
+use crate::handlers::error::{ErrResp, MESSAGE_ORDER_NOT_FOUND, MESSAGE_ORDER_REMOVAL_FAILED};
 use crate::repositories::order::OrderRepo;
 
 #[derive(Serialize)]
@@ -45,7 +45,7 @@ impl RemoveOrderHandler {
         } else {
             let resp = RemoveOrderResp {
                 table_id,
-                message: "Order cannot be removed as it is already started preparing, or completed".to_string(),
+                message: MESSAGE_ORDER_REMOVAL_FAILED.to_string(),
             };
             Ok(warp::reply::with_status(
                 warp::reply::json(&resp),
