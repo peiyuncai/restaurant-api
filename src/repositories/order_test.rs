@@ -162,7 +162,7 @@ mod order_test {
     }
 
     #[test]
-    fn test_remove_order() {
+    fn test_remove_order_success() {
         let repo = OrderRepo::new();
 
         // Given Order in Received status, when attempting cancellation, order should be canceled.
@@ -176,6 +176,11 @@ mod order_test {
         let (removed, existed) = repo.remove_order(1);
         assert!(removed);
         assert!(existed);
+    }
+
+    #[test]
+    fn test_remove_order_failed() {
+        let repo = OrderRepo::new();
 
         // Given Order in Preparing status, when attempting cancellation, order should not be canceled.
         let mut order = Order::new(1, vec![]);
