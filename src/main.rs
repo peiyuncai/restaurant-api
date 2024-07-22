@@ -40,7 +40,7 @@ async fn main() {
     }
 
     let order_repo = Arc::new(OrderRepo::new());
-    let pool = ThreadPool::new(pool_size);
+    let pool = Arc::new(ThreadPool::new(pool_size));
     let add_order_handler = Arc::new(AddOrderHandler::new(order_repo.clone(), pool.clone()));
     let query_order_handler = Arc::new(QueryOrderHandler::new(order_repo.clone()));
     let remove_order_handler = Arc::new(RemoveOrderHandler::new(order_repo.clone()));
@@ -107,6 +107,4 @@ async fn main() {
         .or(remove_order);
 
     warp::serve(routes).run(([127, 0, 0, 1], 3030)).await;
-
-    pool.lock().unwrap().join();
 }

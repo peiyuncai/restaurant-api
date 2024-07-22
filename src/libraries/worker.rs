@@ -4,7 +4,7 @@ use std::thread;
 use crate::libraries::job::Job;
 
 pub struct Worker {
-    id: usize,
+    pub(crate) id: usize,
     pub(crate) thread: Option<thread::JoinHandle<()>>,
 }
 

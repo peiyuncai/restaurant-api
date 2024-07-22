@@ -13,7 +13,7 @@ mod tests {
     #[tokio::test]
     async fn test_add_meal_items_handler_not_found() {
         let order_repo = Arc::new(OrderRepo::new());
-        let thread_pool = ThreadPool::new(2);
+        let thread_pool = Arc::new(ThreadPool::new(2));
 
         let handler = AddMealItemsHandler::new(order_repo.clone(), thread_pool.clone());
 

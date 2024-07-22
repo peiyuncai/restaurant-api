@@ -25,11 +25,11 @@ pub struct AddOrderResp {
 
 pub struct AddOrderHandler {
     order_repo: Arc<OrderRepo>,
-    thread_pool: Arc<Mutex<ThreadPool>>,
+    thread_pool: Arc<ThreadPool>,
 }
 
 impl AddOrderHandler {
-    pub fn new(order_repo: Arc<OrderRepo>, thread_pool: Arc<Mutex<ThreadPool>>) -> Self {
+    pub fn new(order_repo: Arc<OrderRepo>, thread_pool: Arc<ThreadPool>) -> Self {
         AddOrderHandler {
             order_repo,
             thread_pool,
@@ -66,7 +66,7 @@ impl AddOrderHandler {
             let table_id = req.table_id;
             let order_repo_arc = Arc::clone(&self.order_repo);
 
-            self.thread_pool.lock().unwrap().execute(move || {
+            self.thread_pool.execute(move || {
                 if let Some(meal_item_arc) = order_repo_arc.get_order_meal_item(table_id, meal_item_id) {
                     let meal_item = meal_item_arc.lock().unwrap();
                     if meal_item.is_removed() { return; }
