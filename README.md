@@ -113,4 +113,5 @@ There are still many improvements space. I will note down here.
 6. Limit the number of threads serving API requests
 7. Archive completed order to another table (another data structure). Now when order is completed or canceled, order can be overridden.
 8. Once order gets started preparing, we can't cancel order as a whole. We can improve to have more granular control where maybe we can cancel those meals not yet being prepared.
+9. API Path design did not follow best practice. Can be improved.
 
