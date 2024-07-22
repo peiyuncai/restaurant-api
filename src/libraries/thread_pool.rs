@@ -3,6 +3,10 @@ use std::sync::mpsc::Sender;
 use crate::libraries::job::Job;
 use crate::libraries::worker::Worker;
 
+pub trait ThreadPoolDyn: Send + Sync {
+    fn execute(&self, job: Box<dyn FnOnce() + Send + 'static>);
+}
+
 pub struct ThreadPool {
     workers: Vec<Worker>,
     sender: Option<Sender<Job>>,
@@ -22,12 +26,10 @@ impl ThreadPool {
 
         ThreadPool { workers, sender: Some(sender) }
     }
+}
 
-    pub fn execute<F>(&self, f: F)
-    where
-        F: FnOnce() + Send + 'static,
-    {
-        let job = Box::new(f);
+impl ThreadPoolDyn for ThreadPool {
+    fn execute(&self, job: Box<dyn FnOnce() + Send + 'static>) {
         self.sender.as_ref().unwrap().send(job).unwrap()
     }
 }

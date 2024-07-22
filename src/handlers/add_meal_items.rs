@@ -6,7 +6,7 @@ use uuid::Uuid;
 use warp::http::StatusCode;
 use crate::handlers::error::{ErrResp, MESSAGE_ORDER_NOT_FOUND};
 use crate::handlers::query_order::{OrderResp};
-use crate::libraries::thread_pool::ThreadPool;
+use crate::libraries::thread_pool::{ThreadPoolDyn};
 use crate::models::meal::{MealItem, MealItemStatus};
 use crate::models::menu::MenuItem;
 use crate::repositories::order::OrderRepo;
@@ -31,11 +31,11 @@ pub struct AddMealItemsResp {
 
 pub struct AddMealItemsHandler {
     order_repo: Arc<OrderRepo>,
-    thread_pool: Arc<ThreadPool>,
+    thread_pool: Arc<dyn ThreadPoolDyn>,
 }
 
 impl AddMealItemsHandler {
-    pub fn new(order_repo: Arc<OrderRepo>, thread_pool: Arc<ThreadPool>) -> Self {
+    pub fn new(order_repo: Arc<OrderRepo>, thread_pool: Arc<dyn ThreadPoolDyn>) -> Self {
         AddMealItemsHandler {
             order_repo,
             thread_pool,
@@ -70,7 +70,7 @@ impl AddMealItemsHandler {
             let table_id = req.table_id;
             let order_repo_arc = Arc::clone(&self.order_repo);
 
-            self.thread_pool.execute(move || {
+            self.thread_pool.execute(Box::new(move || {
                 if let Some(meal_item_arc) = order_repo_arc.get_order_meal_item(table_id, meal_item_id) {
                     let meal_item = meal_item_arc.lock().unwrap();
                     if meal_item.is_removed() { return; }
@@ -89,7 +89,7 @@ impl AddMealItemsHandler {
                     order_repo_arc.update_order_meal_item_status(table_id, meal_item_id, MealItemStatus::Completed);
                     println!("completed {}", meal_item_id);
                 }
-            })
+            }))
         }
 
         if let Some(order) = self.order_repo.get_order_by_table_id(req.table_id) {

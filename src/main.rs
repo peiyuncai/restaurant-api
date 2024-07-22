@@ -9,7 +9,7 @@ use crate::handlers::query_meal_item::QueryMealItemHandler;
 use crate::handlers::query_order::QueryOrderHandler;
 use crate::handlers::remove_meal_items::{RemoveMealItemsHandler, RemoveMealItemsReq};
 use crate::handlers::remove_order::{RemoveOrderHandler};
-use crate::libraries::thread_pool::ThreadPool;
+use crate::libraries::thread_pool::{ThreadPool, ThreadPoolDyn};
 use crate::repositories::order::OrderRepo;
 
 mod models;

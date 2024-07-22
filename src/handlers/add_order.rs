@@ -6,7 +6,7 @@ use warp::http::StatusCode;
 use crate::handlers::add_meal_items::{MenuItemReq};
 use crate::handlers::error::{ErrResp, MESSAGE_ORDER_CONFLICTED};
 use crate::handlers::query_order::{OrderResp};
-use crate::libraries::thread_pool::ThreadPool;
+use crate::libraries::thread_pool::{ThreadPoolDyn};
 use crate::models::meal::{MealItemStatus};
 use crate::models::menu::MenuItem;
 use crate::models::order::Order;
@@ -25,11 +25,11 @@ pub struct AddOrderResp {
 
 pub struct AddOrderHandler {
     order_repo: Arc<OrderRepo>,
-    thread_pool: Arc<ThreadPool>,
+    thread_pool: Arc<dyn ThreadPoolDyn>,
 }
 
 impl AddOrderHandler {
-    pub fn new(order_repo: Arc<OrderRepo>, thread_pool: Arc<ThreadPool>) -> Self {
+    pub fn new(order_repo: Arc<OrderRepo>, thread_pool: Arc<dyn ThreadPoolDyn>) -> Self {
         AddOrderHandler {
             order_repo,
             thread_pool,
@@ -66,7 +66,7 @@ impl AddOrderHandler {
             let table_id = req.table_id;
             let order_repo_arc = Arc::clone(&self.order_repo);
 
-            self.thread_pool.execute(move || {
+            self.thread_pool.execute(Box::new(move || {
                 if let Some(meal_item_arc) = order_repo_arc.get_order_meal_item(table_id, meal_item_id) {
                     let meal_item = meal_item_arc.lock().unwrap();
                     if meal_item.is_removed() { return; }
@@ -86,7 +86,7 @@ impl AddOrderHandler {
 
                     println!("completed {}", meal_item_id);
                 }
-            })
+            }))
         }
 
         if let Some(order) = self.order_repo.get_order_by_table_id(req.table_id) {
