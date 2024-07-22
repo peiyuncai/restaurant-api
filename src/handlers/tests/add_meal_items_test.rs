@@ -48,7 +48,7 @@ async fn test_add_meal_items_handler_success() {
     // let actual_body: OrderResp = serde_json::from_slice(&*body_bytes).expect("failed to parse");
     // println!("{:?}", actual_body);
 
-    thread_pool.wait().await;
+    thread_pool.wait();
     assert_eq!(status, StatusCode::OK);
     assert_eq!(2, thread_pool.get_count());
 }
