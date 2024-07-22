@@ -1,3 +1,4 @@
+use std::fmt;
 use std::sync::{Arc, Mutex};
 use chrono::{DateTime, Utc};
 use dashmap::DashMap;
@@ -13,6 +14,18 @@ pub enum OrderStatus {
     Preparing,
     Completed,
     Canceled,
+}
+
+impl fmt::Display for OrderStatus {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let s = match self {
+            OrderStatus::Received => "Received",
+            OrderStatus::Preparing => "Preparing",
+            OrderStatus::Completed => "Completed",
+            OrderStatus::Canceled => "Canceled",
+        };
+        write!(f, "{}", s)
+    }
 }
 
 #[derive(Clone, Debug)]

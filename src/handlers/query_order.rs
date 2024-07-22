@@ -21,7 +21,7 @@ struct MealItemResp {
 pub struct OrderResp {
     remaining_cooking_time_upper_bound_in_min: u32,
     total_price: String,
-    status: OrderStatus,
+    status: String,
     meal_items: Vec<MealItemResp>,
 }
 
@@ -30,7 +30,7 @@ impl OrderResp {
         let mut order_resp = OrderResp {
             total_price: order.get_total_price().to_string(),
             remaining_cooking_time_upper_bound_in_min: 0,
-            status: OrderStatus::Received,
+            status: OrderStatus::Received.to_string(),
             meal_items: vec![],
         };
 
@@ -76,13 +76,13 @@ impl OrderResp {
         }
 
         if all_removed {
-            order_resp.status = OrderStatus::Canceled;
+            order_resp.status = OrderStatus::Canceled.to_string();
         } else if has_preparing {
-            order_resp.status = OrderStatus::Preparing;
+            order_resp.status = OrderStatus::Preparing.to_string();
         } else if has_received {
-            order_resp.status = OrderStatus::Received;
+            order_resp.status = OrderStatus::Received.to_string();
         } else if has_completed {
-            order_resp.status = OrderStatus::Completed;
+            order_resp.status = OrderStatus::Completed.to_string();
         }
 
         order_resp
