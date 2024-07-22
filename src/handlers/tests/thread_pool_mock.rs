@@ -21,7 +21,7 @@ impl MockThreadPool {
         self.counter.load(Ordering::Relaxed)
     }
 
-    pub fn wait(&self) {
+    pub async fn wait(&self) {
         _ = self.barrier.wait();
     }
 }
