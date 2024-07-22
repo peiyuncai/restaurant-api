@@ -1,5 +1,11 @@
 @startuml
 
+enum MealItemStatus {
+  Received
+  Preparing
+  Completed
+}
+
 class Order {
   table_id: u32
   order_id: Uuid
@@ -14,9 +20,8 @@ class Order {
 
 class MealItem {
   meal_item_id: Uuid
-  menu_item: MenuItem
-  creation_time: DateTime<Utc>
-  update_time: DateTime<Utc>
+  creation_time: DateTime
+  update_time: DateTime
   cooking_time_in_min: u32
   is_removed: bool
   status: MealItemStatus
@@ -25,5 +30,23 @@ class MealItem {
 }
 
 Order "1" *-- "many" MealItem : contains
+
+class MenuItem {
+    menu_item_id: Uuid
+    name: String
+    price: f64
+    new()
+}
+
+MenuItem "many" --> "1" MealItem: against a
+
+class Menu {
+    menu_id: Uuid
+    name: String
+    new()
+    add_menu_items()
+}
+
+Menu "1" *-- "many" MenuItem : contains
 
 @enduml
