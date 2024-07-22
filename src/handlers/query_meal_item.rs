@@ -3,7 +3,6 @@ use serde::Serialize;
 use uuid::Uuid;
 use warp::http::StatusCode;
 use crate::handlers::add_meal_items::{ErrResp, MESSAGE_ITEM_NOT_FOUND};
-use crate::handlers::query_order::convert_price;
 use crate::models::meal::{MealItem};
 use crate::repositories::order::OrderRepo;
 
@@ -17,13 +16,12 @@ struct MealItemResp {
     status: String,
 }
 
-
 impl MealItemResp {
     pub fn new(item: MealItem) -> Self {
         MealItemResp {
             meal_item_id: item.id(),
             name: item.get_name(),
-            price: convert_price(item.price()),
+            price: item.price().to_string(),
             cooking_time_in_min: item.cooking_time_in_min(),
             is_removed: item.is_removed(),
             status: item.get_status().to_string(),

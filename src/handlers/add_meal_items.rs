@@ -4,7 +4,7 @@ use std::time::Duration;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use warp::http::StatusCode;
-use crate::handlers::query_order::{convert_price_from_string, OrderResp};
+use crate::handlers::query_order::{OrderResp};
 use crate::libraries::thread_pool::ThreadPool;
 use crate::models::meal::{MealItem, MealItemStatus};
 use crate::models::menu::MenuItem;
@@ -27,8 +27,8 @@ pub struct MenuItemReq {
 
 #[derive(Deserialize)]
 pub struct AddMealItemsReq {
-    pub table_id: u32,
-    pub menu_items: Vec<MenuItemReq>,
+    table_id: u32,
+    menu_items: Vec<MenuItemReq>,
 }
 
 #[derive(Serialize)]
@@ -55,7 +55,7 @@ impl AddMealItemsHandler {
             let menu_item = MenuItem::create(
                 menu_item_req.menu_item_id,
                 menu_item_req.name,
-                convert_price_from_string(menu_item_req.price),
+                menu_item_req.price,
             );
 
             meal_items.push(MealItem::create(menu_item));
@@ -68,7 +68,7 @@ impl AddMealItemsHandler {
             };
             return Ok(warp::reply::with_status(
                 warp::reply::json(&resp),
-                StatusCode::NOT_FOUND, // or StatusCode::NOT_FOUND depending on your logic
+                StatusCode::NOT_FOUND,
             ));
         }
 

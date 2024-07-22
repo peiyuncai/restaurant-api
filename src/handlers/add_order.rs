@@ -4,7 +4,7 @@ use std::time::Duration;
 use serde::{Deserialize, Serialize};
 use warp::http::StatusCode;
 use crate::handlers::add_meal_items::{ErrResp, MenuItemReq};
-use crate::handlers::query_order::{convert_price_from_string, OrderResp};
+use crate::handlers::query_order::{OrderResp};
 use crate::libraries::thread_pool::ThreadPool;
 use crate::models::meal::{MealItemStatus};
 use crate::models::menu::MenuItem;
@@ -13,8 +13,8 @@ use crate::repositories::order::OrderRepo;
 
 #[derive(Deserialize)]
 pub struct AddOrderReq {
-    pub table_id: u32,
-    pub menu_items: Vec<MenuItemReq>,
+    table_id: u32,
+    menu_items: Vec<MenuItemReq>,
 }
 
 #[derive(Serialize)]
@@ -41,7 +41,7 @@ impl AddOrderHandler {
             let menu_item = MenuItem::create(
                 menu_item_req.menu_item_id,
                 menu_item_req.name,
-                convert_price_from_string(menu_item_req.price),
+                menu_item_req.price,
             );
             menu_items.push(menu_item);
         }

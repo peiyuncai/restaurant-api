@@ -4,6 +4,7 @@ use dashmap::DashMap;
 use uuid::Uuid;
 use crate::models::meal::{MealItem, MealItemStatus};
 use crate::models::menu::MenuItem;
+use crate::models::price::Price;
 
 #[derive(Clone, Debug)]
 pub struct Order {
@@ -11,7 +12,7 @@ pub struct Order {
     table_id: u32,
     meal_items: DashMap<Uuid, Arc<Mutex<MealItem>>>,
     total_cooking_time_in_min: u32,
-    total_price: f64,
+    total_price: Price,
     creation_time: DateTime<Utc>,
     update_time: DateTime<Utc>,
 }
@@ -23,7 +24,7 @@ impl Order {
             table_id,
             meal_items: Default::default(),
             total_cooking_time_in_min: 0,
-            total_price: 0.0,
+            total_price: Default::default(),
             creation_time: Utc::now(),
             update_time: Utc::now(),
             // status: OrderStatus::Received,
@@ -32,10 +33,10 @@ impl Order {
         order
     }
 
-    pub fn add_meal_items_by_menu_items(&mut self, menu_items: Vec<MenuItem>) -> bool {
+    fn add_meal_items_by_menu_items(&mut self, menu_items: Vec<MenuItem>) -> bool {
         for menu_item in menu_items.iter() {
             let meal_item = MealItem::create(menu_item.clone());
-            self.total_price += meal_item.price();
+            self.total_price.add(meal_item.price());
             self.total_cooking_time_in_min += meal_item.cooking_time_in_min();
             self.meal_items.insert(meal_item.id(), Arc::new(Mutex::new(meal_item)));
         }
@@ -45,7 +46,7 @@ impl Order {
 
     pub fn add_meal_items(&mut self, meal_items: Vec<MealItem>) -> bool {
         for meal_item in meal_items.iter() {
-            self.total_price += meal_item.price();
+            self.total_price.add(meal_item.price());
             self.total_cooking_time_in_min += meal_item.cooking_time_in_min();
             self.meal_items.insert(meal_item.id(), Arc::new(Mutex::new(meal_item.clone())));
         }
@@ -58,7 +59,6 @@ impl Order {
         for meal_item_id in meal_item_ids.iter() {
             if let Some(meal_item) = self.meal_items.get(meal_item_id) {
                 let mut meal_item = meal_item.lock().unwrap();
-                println!("{} check if item can be removed", meal_item.id());
 
                 match meal_item.get_status() {
                     MealItemStatus::Preparing | MealItemStatus::Completed => {
@@ -67,8 +67,8 @@ impl Order {
                     }
                     _ => {}
                 }
-                println!("{} is removed", meal_item.id());
-                self.total_price -= meal_item.price();
+
+                self.total_price.deduct(meal_item.price());
                 self.total_cooking_time_in_min -= meal_item.cooking_time_in_min();
 
                 meal_item.remove();
@@ -99,7 +99,7 @@ impl Order {
         self.order_id
     }
 
-    pub fn get_total_price(&self) -> f64 {
+    pub fn get_total_price(&self) -> Price {
         self.total_price
     }
 }

@@ -1,7 +1,7 @@
-use serde::Deserialize;
 use uuid::Uuid;
+use crate::models::price::Price;
 
-#[derive(Clone, Debug)]
+#[derive(Debug)]
 pub struct Menu {
     menu_id: Uuid,
     name: String,
@@ -27,31 +27,31 @@ impl Menu {
     }
 }
 
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug)]
 pub struct MenuItem {
     menu_item_id: Uuid,
     name: String,
-    price: f64,
+    price: Price,
 }
 
 impl MenuItem {
-    pub fn new(name: String, price: f64) -> Self {
+    pub fn new(name: String, price: String) -> Self {
         MenuItem {
             menu_item_id: Uuid::new_v4(),
             name,
-            price,
+            price: Price::from_string(price),
         }
     }
 
-    pub fn create(id: Uuid, name: String, price: f64) -> Self {
+    pub fn create(id: Uuid, name: String, price: String) -> Self {
         MenuItem {
             menu_item_id: id,
             name,
-            price,
+            price: Price::from_string(price),
         }
     }
 
-    pub fn price(&self) -> f64 {
+    pub fn price(&self) -> Price {
         self.price
     }
 

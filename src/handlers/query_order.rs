@@ -36,13 +36,11 @@ pub struct OrderResp {
 impl OrderResp {
     pub fn new(order: Order, include_removed_items: bool) -> Self {
         let mut order_resp = OrderResp {
-            total_price: "".to_string(),
+            total_price: order.get_total_price().to_string(),
             remaining_cooking_time_upper_bound_in_min: 0,
             status: OrderStatus::Received,
             meal_items: vec![],
         };
-
-        order_resp.total_price = convert_price(order.get_total_price());
 
         let mut has_preparing = false;
         let mut has_received = false;
@@ -56,7 +54,7 @@ impl OrderResp {
                 let item_resp = MealItemResp {
                     meal_item_id: item.id(),
                     name: item.get_name(),
-                    price: convert_price(item.price()),
+                    price: item.price().to_string(),
                     cooking_time_in_min: item.cooking_time_in_min(),
                     status: item.get_status().to_string(),
                     is_remove: item.is_removed(),
@@ -97,17 +95,6 @@ impl OrderResp {
 
         order_resp
     }
-}
-
-pub fn convert_price(price: f64) -> String {
-    let price_in_cents: u64 = (price * 100.0) as u64;
-    price_in_cents.to_string()
-}
-
-pub fn convert_price_from_string(price: String) -> f64 {
-    let price_in_cents = price.parse().unwrap_or(0.0);
-    let price: f64 = price_in_cents / 100.0;
-    price
 }
 
 #[derive(Serialize)]

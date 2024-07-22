@@ -3,6 +3,7 @@ use chrono::{DateTime, Utc};
 use uuid::Uuid;
 use rand::{Rng};
 use crate::models::menu::MenuItem;
+use crate::models::price::Price;
 
 #[derive(Clone, Copy, Debug)]
 pub enum MealItemStatus {
@@ -59,7 +60,7 @@ impl MealItem {
         self.cooking_time_in_min
     }
 
-    pub fn price(&self) -> f64 {
+    pub fn price(&self) -> Price {
         self.menu_item.price()
     }
 
