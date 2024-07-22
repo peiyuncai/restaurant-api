@@ -4,19 +4,12 @@ use std::time::Duration;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use warp::http::StatusCode;
+use crate::handlers::error::{ErrResp, MESSAGE_ORDER_NOT_FOUND};
 use crate::handlers::query_order::{OrderResp};
 use crate::libraries::thread_pool::ThreadPool;
 use crate::models::meal::{MealItem, MealItemStatus};
 use crate::models::menu::MenuItem;
 use crate::repositories::order::OrderRepo;
-
-pub const MESSAGE_ORDER_NOT_FOUND: &str = "There are no orders associated with this table";
-pub const MESSAGE_ITEM_NOT_FOUND: &str = "The specified meal items can't be found for this table";
-
-#[derive(Serialize)]
-pub struct ErrResp {
-    pub message: String,
-}
 
 #[derive(Deserialize)]
 pub struct MenuItemReq {

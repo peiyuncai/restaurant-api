@@ -1,5 +1,4 @@
 use std::env;
-use std::str::FromStr;
 use std::sync::Arc;
 use serde::Deserialize;
 use uuid::Uuid;

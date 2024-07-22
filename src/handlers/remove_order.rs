@@ -1,7 +1,7 @@
 use std::sync::{Arc};
 use serde::{Serialize};
 use warp::http::{StatusCode};
-use crate::handlers::add_meal_items::{ErrResp, MESSAGE_ORDER_NOT_FOUND};
+use crate::handlers::error::{ErrResp, MESSAGE_ORDER_NOT_FOUND};
 use crate::repositories::order::OrderRepo;
 
 #[derive(Serialize)]
