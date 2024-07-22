@@ -20,8 +20,8 @@ pub struct MenuItemReq {
 
 #[derive(Deserialize)]
 pub struct AddMealItemsReq {
-    table_id: u32,
-    menu_items: Vec<MenuItemReq>,
+    pub(crate) table_id: u32,
+    pub(crate) menu_items: Vec<MenuItemReq>,
 }
 
 #[derive(Serialize)]

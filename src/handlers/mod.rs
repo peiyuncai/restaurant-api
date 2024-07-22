@@ -5,3 +5,6 @@ pub mod add_meal_items;
 pub mod remove_meal_items;
 pub mod remove_order;
 pub mod error;
+#[cfg(test)]
+mod tests;
+

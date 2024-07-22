@@ -70,7 +70,7 @@ mod order_test {
         order.add_meal_items(vec![meal_item.clone()]);
         expected_meal_items.push(meal_item);
 
-        let mut actual_meal_items = order.get_meal_items();
+        let actual_meal_items = order.get_meal_items();
         assert_eq!(expected_meal_items.len(), actual_meal_items.len());
 
         for (expected, actual) in expected_meal_items.iter().zip(actual_meal_items.iter()) {

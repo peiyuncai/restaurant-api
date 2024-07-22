@@ -13,3 +13,4 @@ warp = "0.3.7"
 hyper = { version = "1.4.1", features = ["full"] }
 tokio = { version = "1.0.0", features = ["rt", "rt-multi-thread", "macros"] }
 reply = "0.0.1-beta.2"
+serde_json = "1.0.120"
