@@ -92,13 +92,12 @@ I will try to add unit tests once I finish documentations.
 There are still many improvements space. I will note down here.
 
 1. Unit tests are to be added
-2. Error handling can be more concise and unified
-3. Separate request and response models from handler files
-4. Move common functions out from handlers
-5. Menu models are actually dummy models. Otherwise, we can validate received Menu with DB's Menu or have different
-   implementation to avoid request data manipulation
-6. Limit the number of thread serving API requests
-7. Archive completed order to another data store
-8. Avoid order override when it's not completed yet
-9. Improve order cancellation, maybe we can cancel those meals not yet being prepared.
+2. Should separate out DB model from domain model, currently we use the same model for both for simplicity(though make testing more difficult)
+3. Error handling can be more concise and unified
+4. Separate request and response models from handler modules
+5. Menu models are actually dummy models. Otherwise, we should validate received Menu with DB's Menu or have different
+   implementation to avoid data manipulation, ex. price
+6. Limit the number of threads serving API requests
+7. Archive completed order to another table (another data structure)
+8. Improve order cancellation, maybe we can cancel those meals not yet being prepared.
 

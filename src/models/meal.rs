@@ -5,7 +5,7 @@ use rand::{Rng};
 use crate::models::menu::MenuItem;
 use crate::models::price::Price;
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub enum MealItemStatus {
     Received,
     Preparing,
@@ -23,7 +23,7 @@ impl fmt::Display for MealItemStatus {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct MealItem {
     meal_item_id: Uuid,
     menu_item: MenuItem,

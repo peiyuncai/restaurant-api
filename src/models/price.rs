@@ -1,4 +1,4 @@
-#[derive(Clone, Debug, Copy)]
+#[derive(Clone, Debug, Copy, PartialEq)]
 pub struct Price(f64);
 
 impl Price {

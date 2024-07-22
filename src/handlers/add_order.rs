@@ -75,11 +75,15 @@ impl AddOrderHandler {
                     drop(meal_item);
 
                     println!("start preparing {}", meal_item_id);
-                    order_repo_arc.update_order_meal_item_status(table_id, meal_item_id, MealItemStatus::Preparing);
 
+                    let existed = order_repo_arc.update_order_meal_item_status(table_id, meal_item_id, MealItemStatus::Preparing);
+                    if !existed { return; }
+
+                    // Simulates cooking time by putting the thread to sleep, blocking it from accepting new meals until the current meal is prepared.
                     sleep(Duration::from_secs(cooking_time_in_min as u64));
 
                     order_repo_arc.update_order_meal_item_status(table_id, meal_item_id, MealItemStatus::Completed);
+
                     println!("completed {}", meal_item_id);
                 }
             })

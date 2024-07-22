@@ -27,7 +27,7 @@ impl Menu {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct MenuItem {
     menu_item_id: Uuid,
     name: String,
