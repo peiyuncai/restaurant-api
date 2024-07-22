@@ -4,7 +4,7 @@ use std::time::Duration;
 use serde::{Deserialize, Serialize};
 use warp::http::StatusCode;
 use crate::handlers::add_meal_items::{MenuItemReq};
-use crate::handlers::error::ErrResp;
+use crate::handlers::error::{ErrResp, MESSAGE_ORDER_CONFLICTED};
 use crate::handlers::query_order::{OrderResp};
 use crate::libraries::thread_pool::ThreadPool;
 use crate::models::meal::{MealItemStatus};
@@ -37,6 +37,17 @@ impl AddOrderHandler {
     }
 
     pub fn handle(&self, req: AddOrderReq) -> Result<impl warp::Reply, warp::Rejection> {
+        if let Some(order_arc) = self.order_repo.get_order_by_table_id(req.table_id) {
+            if !order_arc.lock().unwrap().is_completed_or_cancelled() {
+                let resp = ErrResp {
+                    message: MESSAGE_ORDER_CONFLICTED.to_string()
+                };
+                return Ok(warp::reply::with_status(
+                    warp::reply::json(&resp),
+                    StatusCode::CONFLICT,
+                ));
+            }
+        }
         let mut menu_items = Vec::with_capacity(req.menu_items.len());
         for menu_item_req in req.menu_items {
             let menu_item = MenuItem::create(

@@ -1,10 +1,19 @@
 use std::sync::{Arc, Mutex};
 use chrono::{DateTime, Utc};
 use dashmap::DashMap;
+use serde::Serialize;
 use uuid::Uuid;
 use crate::models::meal::{MealItem, MealItemStatus};
 use crate::models::menu::MenuItem;
 use crate::models::price::Price;
+
+#[derive(Copy, Clone, Debug, Serialize)]
+pub enum OrderStatus {
+    Received,
+    Preparing,
+    Completed,
+    Canceled,
+}
 
 #[derive(Clone, Debug)]
 pub struct Order {
@@ -101,5 +110,52 @@ impl Order {
 
     pub fn get_total_price(&self) -> Price {
         self.total_price
+    }
+
+    pub fn is_completed_or_cancelled(&self) -> bool {
+        let order_status = self.get_order_status();
+        match order_status {
+            OrderStatus::Completed | OrderStatus::Canceled => true,
+            _ => false,
+        }
+    }
+
+    // TODO: improve to update order_status on write
+    pub fn get_order_status(&self) -> OrderStatus {
+        let mut has_preparing = false;
+        let mut has_received = false;
+        let mut has_completed = true;
+        let mut all_removed = true;
+        for item_arc in self.meal_items.iter() {
+            let item = item_arc.lock().unwrap();
+
+            if item.is_removed() {
+                continue;
+            }
+
+            all_removed = false;
+
+            match item.get_status() {
+                MealItemStatus::Received => {
+                    has_received = true;
+                    has_completed = false;
+                }
+                MealItemStatus::Preparing => {
+                    has_preparing = true;
+                    has_completed = false;
+                }
+                MealItemStatus::Completed => {}
+            }
+        }
+
+        if all_removed {
+            OrderStatus::Canceled
+        } else if has_preparing {
+            OrderStatus::Preparing
+        } else if has_received {
+            OrderStatus::Received
+        } else {
+            OrderStatus::Completed
+        }
     }
 }
