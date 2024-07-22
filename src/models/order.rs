@@ -8,7 +8,7 @@ use crate::models::meal::{MealItem, MealItemStatus};
 use crate::models::menu::MenuItem;
 use crate::models::price::Price;
 
-#[derive(Copy, Clone, Debug, Serialize)]
+#[derive(Copy, Clone, Debug, Serialize, PartialEq)]
 pub enum OrderStatus {
     Received,
     Preparing,
