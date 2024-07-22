@@ -6,6 +6,13 @@ enum MealItemStatus {
   Completed
 }
 
+enum OrderStatus {
+  Received
+  Preparing
+  Completed
+  Cancelled
+}
+
 class Order {
   table_id: u32
   order_id: Uuid
