@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use warp::http::StatusCode;
 use warp::reply::json;
-use crate::handlers::error::{ErrResp, MESSAGE_ITEM_NOT_FOUND, MESSAGE_ITEMS_REMOVAL_FAILED};
+use crate::handlers::error::{ErrResp, MESSAGE_ITEMS_REMOVAL_FAILED, MESSAGE_ORDER_NOT_FOUND};
 use crate::repositories::order::OrderRepo;
 
 #[derive(Deserialize)]
@@ -34,7 +34,7 @@ impl RemoveMealItemsHandler {
         let (ids, existed) = self.order_repo.remove_order_meal_items(req.table_id, req.meal_item_ids);
         if !existed {
             let resp = ErrResp {
-                message: MESSAGE_ITEM_NOT_FOUND.to_string(),
+                message: MESSAGE_ORDER_NOT_FOUND.to_string(),
             };
             return Ok(warp::reply::with_status(
                 warp::reply::json(&resp),
