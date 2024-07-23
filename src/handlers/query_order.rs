@@ -36,7 +36,6 @@ impl OrderResp {
 
         let mut has_preparing = false;
         let mut has_received = false;
-        let mut has_completed = true;
         let mut all_removed = true;
 
         for item_arc in order.get_meal_items().iter() {
@@ -63,12 +62,10 @@ impl OrderResp {
             match item.get_status() {
                 MealItemStatus::Received => {
                     has_received = true;
-                    has_completed = false;
                     order_resp.remaining_cooking_time_upper_bound_in_min += item.cooking_time_in_min();
                 }
                 MealItemStatus::Preparing => {
                     has_preparing = true;
-                    has_completed = false;
                     order_resp.remaining_cooking_time_upper_bound_in_min += item.cooking_time_in_min();
                 }
                 MealItemStatus::Completed => {}
@@ -81,7 +78,7 @@ impl OrderResp {
             order_resp.status = OrderStatus::Preparing.to_string();
         } else if has_received {
             order_resp.status = OrderStatus::Received.to_string();
-        } else if has_completed {
+        } else {
             order_resp.status = OrderStatus::Completed.to_string();
         }
 

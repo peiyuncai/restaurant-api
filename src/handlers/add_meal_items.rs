@@ -73,6 +73,7 @@ impl AddMealItemsHandler {
             self.thread_pool.execute(Box::new(move || {
                 if let Some(meal_item_arc) = order_repo_arc.get_order_meal_item(table_id, meal_item_id) {
                     let meal_item = meal_item_arc.lock().unwrap();
+                    // If item is removed, continue without further processing
                     if meal_item.is_removed() { return; }
 
                     let cooking_time_in_min = meal_item.cooking_time_in_min();
@@ -80,6 +81,7 @@ impl AddMealItemsHandler {
 
                     println!("start preparing {}", meal_item_id);
 
+                    // Update status as Preparing to prevent meal item being canceled
                     let existed = order_repo_arc.update_order_meal_item_status(table_id, meal_item_id, MealItemStatus::Preparing);
                     if !existed { return; }
 

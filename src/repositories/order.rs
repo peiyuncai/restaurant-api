@@ -2,13 +2,15 @@ use std::sync::{Arc, Mutex};
 use dashmap::DashMap;
 use uuid::Uuid;
 use crate::models::meal::{MealItem, MealItemStatus};
-use crate::models::order::{Order};
+use crate::models::order::{Order, OrderStatus};
 
 pub struct OrderRepo {
     pub orders: Arc<DashMap<u32, Arc<Mutex<Order>>>>,
 }
 
 impl OrderRepo {
+    // In practice, it's common to pass in the DB client to avoid being tied to a specific database vendor.
+    // The logic is simplified here.
     pub fn new() -> Self {
         OrderRepo {
             orders: Arc::new(DashMap::new())
@@ -71,20 +73,16 @@ impl OrderRepo {
         if let Some(order_arc) = self.orders.get(&table_id) {
             let order = order_arc.lock().unwrap();
 
-            for meal_item_arc in order.get_meal_items().iter() {
-                let meal_item = meal_item_arc.lock().unwrap();
-                match meal_item.get_status() {
-                    MealItemStatus::Preparing | MealItemStatus::Completed => {
-                        return (false, true);
-                    }
-                    _ => {}
-                }
+            match order.get_order_status() {
+                OrderStatus::Preparing | OrderStatus::Completed => { return (false, true); }
+                _ => {}
             }
 
             for meal_item_arc in order.get_meal_items().iter() {
                 let mut meal_item = meal_item_arc.lock().unwrap();
                 meal_item.remove();
             }
+
             (true, true)
         } else {
             (false, false)

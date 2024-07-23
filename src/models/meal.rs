@@ -41,7 +41,7 @@ impl MealItem {
             menu_item,
             creation_time: Utc::now(),
             update_time: Utc::now(),
-            cooking_time_in_min: rand::thread_rng().gen_range(5..=15), //5..=15
+            cooking_time_in_min: rand::thread_rng().gen_range(5..=15), //For flexibility, we can pass in function for generating cooking time
             is_removed: false,
             status: MealItemStatus::Received,
         }

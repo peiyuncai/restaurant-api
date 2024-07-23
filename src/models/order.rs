@@ -49,7 +49,6 @@ impl Order {
             total_price: Default::default(),
             creation_time: Utc::now(),
             update_time: Utc::now(),
-            // status: OrderStatus::Received,
         };
         order.add_meal_items_by_menu_items(menu_items);
         order
@@ -99,9 +98,6 @@ impl Order {
             }
         }
         self.update_time = Utc::now();
-        // if self.meal_items.iter().filter(|m| !m.lock().unwrap().is_removed()).count() == 0 {
-        //     self.status = OrderStatus::Canceled;
-        // }
         non_removable_items
     }
 
@@ -117,27 +113,22 @@ impl Order {
         self.table_id
     }
 
-    pub fn get_order_id(&self) -> Uuid {
-        self.order_id
-    }
-
     pub fn get_total_price(&self) -> Price {
         self.total_price
     }
 
-    pub fn is_completed_or_cancelled(&self) -> bool {
+    pub fn is_active(&self) -> bool {
         let order_status = self.get_order_status();
         match order_status {
-            OrderStatus::Completed | OrderStatus::Canceled => true,
+            OrderStatus::Received | OrderStatus::Preparing => true,
             _ => false,
         }
     }
 
-    // TODO: improve to update order_status on write
+    // TODO: improve to have and update order_status on write
     pub fn get_order_status(&self) -> OrderStatus {
         let mut has_preparing = false;
         let mut has_received = false;
-        let mut has_completed = true;
         let mut all_removed = true;
         for item_arc in self.meal_items.iter() {
             let item = item_arc.lock().unwrap();
@@ -151,11 +142,9 @@ impl Order {
             match item.get_status() {
                 MealItemStatus::Received => {
                     has_received = true;
-                    has_completed = false;
                 }
                 MealItemStatus::Preparing => {
                     has_preparing = true;
-                    has_completed = false;
                 }
                 MealItemStatus::Completed => {}
             }

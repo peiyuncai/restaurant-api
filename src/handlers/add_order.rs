@@ -38,7 +38,7 @@ impl AddOrderHandler {
 
     pub fn handle(&self, req: AddOrderReq) -> Result<impl warp::Reply, warp::Rejection> {
         if let Some(order_arc) = self.order_repo.get_order_by_table_id(req.table_id) {
-            if !order_arc.lock().unwrap().is_completed_or_cancelled() {
+            if order_arc.lock().unwrap().is_active() {
                 let resp = ErrResp {
                     error_message: MESSAGE_ORDER_ADD_CONFLICT.to_string()
                 };

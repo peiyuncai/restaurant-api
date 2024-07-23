@@ -94,7 +94,8 @@ When a client sends a request with 3 meal_items for table 1, these 3 items repre
 If another request with 2 meal_items for table 2 is received, these items are also sent to the same channel.
 
 The chef threads continuously consume meal items from the channel. 
-Based on the cooking time of each meal item, the chef thread will sleep to simulate the cooking process. 
+Based on the cooking time of each meal item, the chef thread will sleep to simulate the cooking process.
+The field names as _cooking_time_in_min_ but to see the result faster, the thread actually sleeps for the same amount of time but unit is second.
 Before going to sleep, the chef thread update meal item's status as _Preparing_, preventing the client from canceling it. 
 Once the thread wakes up, it updates meal item's status as _Completed_, preventing the client from canceling it.
 
@@ -118,9 +119,10 @@ There are still many improvements space. I will note down here.
 6. Limit the number of threads serving API requests
 7. Archive completed order to another table (another data structure). Now when order is completed or canceled, order can be overridden.
 8. Once order gets started preparing, we can't cancel order as a whole. We can improve to have more granular control where maybe we can cancel those meals not yet being prepared.
-9. API Path and method design did not follow best practice. Can be improved.
+9. API Path and method design did not follow best practice. Can be improved. There are some issues while defining Path as _/orders/{table-id}/meal-items/{meal-item-id}_, I am still looking into this.
 10. Currently, we can delete data multiple times, this can be improved.
 11. I am still trying to refine the logic so to use borrow or moving ownership rightly
+12. Remove the duplicated code
 
 
 ### Class Diagram
