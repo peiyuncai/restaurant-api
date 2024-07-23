@@ -4,7 +4,7 @@ use warp::hyper::body::to_bytes;
 use uuid::Uuid;
 use warp::http::StatusCode;
 use crate::handlers::add_meal_items::{AddMealItemsHandler, AddMealItemsReq, AddMealItemsResp, MenuItemReq};
-use crate::handlers::error::ErrResp;
+use crate::handlers::error::{ErrResp, MESSAGE_ORDER_NOT_FOUND};
 use crate::libraries::mocks::thread_pool_mock::MockThreadPool;
 use crate::models::order::Order;
 use crate::repositories::order::OrderRepo;
@@ -88,7 +88,7 @@ async fn test_add_meal_items_handler_handle_not_found() {
     let body_bytes = body.to_vec();
     let actual_body: ErrResp = serde_json::from_slice(&*body_bytes).expect("failed to parse");
 
-    let expected_body: ErrResp = ErrResp { message: "There are no orders associated with this table".to_string() };
+    let expected_body: ErrResp = ErrResp { error_message: MESSAGE_ORDER_NOT_FOUND.to_string() };
 
     thread_pool.wait();
     assert_eq!(status, StatusCode::NOT_FOUND);

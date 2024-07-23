@@ -57,7 +57,7 @@ impl AddMealItemsHandler {
         let existed = self.order_repo.add_order_meal_items(req.table_id, meal_items.clone());
         if !existed {
             let resp = ErrResp {
-                message: MESSAGE_ORDER_NOT_FOUND.to_string(),
+                error_message: MESSAGE_ORDER_NOT_FOUND.to_string(),
             };
             return Ok(warp::reply::with_status(
                 warp::reply::json(&resp),
@@ -103,7 +103,7 @@ impl AddMealItemsHandler {
         }
 
         let resp = ErrResp {
-            message: StatusCode::INTERNAL_SERVER_ERROR.to_string()
+            error_message: StatusCode::INTERNAL_SERVER_ERROR.to_string()
         };
         Ok(warp::reply::with_status(
             warp::reply::json(&resp),

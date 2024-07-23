@@ -4,7 +4,7 @@ use std::time::Duration;
 use serde::{Deserialize, Serialize};
 use warp::http::StatusCode;
 use crate::handlers::add_meal_items::{MenuItemReq};
-use crate::handlers::error::{ErrResp, MESSAGE_ORDER_CONFLICTED};
+use crate::handlers::error::{ErrResp, MESSAGE_ORDER_ADD_CONFLICT};
 use crate::handlers::query_order::{OrderResp};
 use crate::libraries::thread_pool::{ThreadPoolDyn};
 use crate::models::meal::{MealItemStatus};
@@ -40,7 +40,7 @@ impl AddOrderHandler {
         if let Some(order_arc) = self.order_repo.get_order_by_table_id(req.table_id) {
             if !order_arc.lock().unwrap().is_completed_or_cancelled() {
                 let resp = ErrResp {
-                    message: MESSAGE_ORDER_CONFLICTED.to_string()
+                    error_message: MESSAGE_ORDER_ADD_CONFLICT.to_string()
                 };
                 return Ok(warp::reply::with_status(
                     warp::reply::json(&resp),
@@ -100,7 +100,7 @@ impl AddOrderHandler {
         }
 
         let resp = ErrResp {
-            message: StatusCode::INTERNAL_SERVER_ERROR.to_string()
+            error_message: StatusCode::INTERNAL_SERVER_ERROR.to_string()
         };
         Ok(warp::reply::with_status(
             warp::reply::json(&resp),

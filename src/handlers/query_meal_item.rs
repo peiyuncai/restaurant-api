@@ -6,8 +6,8 @@ use crate::handlers::error::{ErrResp, MESSAGE_ITEM_NOT_FOUND};
 use crate::models::meal::{MealItem};
 use crate::repositories::order::OrderRepo;
 
-#[derive(Serialize, Deserialize, Debug)]
-struct MealItemResp {
+#[derive(Serialize, Deserialize, Debug, PartialEq)]
+pub struct MealItemResp {
     meal_item_id: Uuid,
     name: String,
     price: String,
@@ -29,9 +29,9 @@ impl MealItemResp {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug)]
-struct QueryMealItemResp {
-    data: MealItemResp,
+#[derive(Serialize, Deserialize, Debug, PartialEq)]
+pub struct QueryMealItemResp {
+    pub data: MealItemResp,
 }
 
 pub struct QueryMealItemHandler {
@@ -53,11 +53,11 @@ impl QueryMealItemHandler {
             };
             Ok(warp::reply::with_status(
                 warp::reply::json(&resp),
-                StatusCode::OK, // or StatusCode::NOT_FOUND depending on your logic
+                StatusCode::OK,
             ))
         } else {
             let resp = ErrResp {
-                message: MESSAGE_ITEM_NOT_FOUND.to_string(),
+                error_message: MESSAGE_ITEM_NOT_FOUND.to_string(),
             };
             Ok(warp::reply::with_status(
                 warp::reply::json(&resp),

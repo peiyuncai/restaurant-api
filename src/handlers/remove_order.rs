@@ -1,14 +1,7 @@
 use std::sync::{Arc};
-use serde::{Deserialize, Serialize};
 use warp::http::{StatusCode};
 use crate::handlers::error::{ErrResp, MESSAGE_ORDER_NOT_FOUND, MESSAGE_ORDER_REMOVAL_FAILED};
 use crate::repositories::order::OrderRepo;
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct RemoveOrderResp {
-    pub table_id: u32,
-    pub message: String,
-}
 
 pub struct RemoveOrderHandler {
     order_repo: Arc<OrderRepo>,
@@ -25,7 +18,7 @@ impl RemoveOrderHandler {
         let (result, existed) = self.order_repo.remove_order(table_id);
         if !existed {
             let resp = ErrResp {
-                message: MESSAGE_ORDER_NOT_FOUND.to_string(),
+                error_message: MESSAGE_ORDER_NOT_FOUND.to_string(),
             };
             return Ok(warp::reply::with_status(
                 warp::reply::json(&resp),
@@ -34,18 +27,13 @@ impl RemoveOrderHandler {
         }
 
         if result {
-            let resp = RemoveOrderResp {
-                table_id,
-                message: "Success".to_string(),
-            };
             Ok(warp::reply::with_status(
-                warp::reply::json(&resp), // You can use a static string for success
-                StatusCode::OK,
+                warp::reply::json(&serde_json::json!({})),
+                StatusCode::NO_CONTENT,
             ))
         } else {
-            let resp = RemoveOrderResp {
-                table_id,
-                message: MESSAGE_ORDER_REMOVAL_FAILED.to_string(),
+            let resp = ErrResp {
+                error_message: MESSAGE_ORDER_REMOVAL_FAILED.to_string(),
             };
             Ok(warp::reply::with_status(
                 warp::reply::json(&resp),

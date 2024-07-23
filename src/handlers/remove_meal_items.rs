@@ -12,9 +12,8 @@ pub struct RemoveMealItemsReq {
     pub meal_item_ids: Vec<Uuid>,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, PartialEq)]
 pub struct RemoveMealItemsResp {
-    pub table_id: u32,
     pub non_removable_meal_item_ids: Vec<Uuid>,
     pub message: String,
 }
@@ -34,7 +33,7 @@ impl RemoveMealItemsHandler {
         let (ids, existed) = self.order_repo.remove_order_meal_items(req.table_id, req.meal_item_ids);
         if !existed {
             let resp = ErrResp {
-                message: MESSAGE_ORDER_NOT_FOUND.to_string(),
+                error_message: MESSAGE_ORDER_NOT_FOUND.to_string(),
             };
             return Ok(warp::reply::with_status(
                 warp::reply::json(&resp),
@@ -43,19 +42,12 @@ impl RemoveMealItemsHandler {
         }
 
         if ids.is_empty() {
-            let success_resp = RemoveMealItemsResp {
-                table_id: req.table_id,
-                non_removable_meal_item_ids: ids,
-                message: "Success".to_string(),
-
-            };
             Ok(warp::reply::with_status(
-                warp::reply::json(&success_resp),
-                StatusCode::OK,
+                json(&serde_json::json!({})),
+                StatusCode::NO_CONTENT,
             ))
         } else {
             let error_resp = RemoveMealItemsResp {
-                table_id: req.table_id,
                 non_removable_meal_item_ids: ids,
                 message: MESSAGE_ITEMS_REMOVAL_FAILED.to_string(),
             };

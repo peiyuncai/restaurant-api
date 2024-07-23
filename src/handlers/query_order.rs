@@ -113,11 +113,11 @@ impl QueryOrderHandler {
             };
             Ok(warp::reply::with_status(
                 warp::reply::json(&resp),
-                StatusCode::OK, // or StatusCode::NOT_FOUND depending on your logic
+                StatusCode::OK,
             ))
         } else {
             let resp = ErrResp {
-                message: MESSAGE_ORDER_NOT_FOUND.to_string(),
+                error_message: MESSAGE_ORDER_NOT_FOUND.to_string(),
             };
             Ok(warp::reply::with_status(
                 warp::reply::json(&resp),
