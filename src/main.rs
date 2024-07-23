@@ -3,19 +3,19 @@ use std::sync::Arc;
 use serde::Deserialize;
 use uuid::Uuid;
 use warp::{Filter};
-use crate::handlers::add_meal_items::{AddMealItemsHandler, AddMealItemsReq};
-use crate::handlers::add_order::{AddOrderHandler, AddOrderReq};
-use crate::handlers::query_meal_item::QueryMealItemHandler;
-use crate::handlers::query_order::QueryOrderHandler;
-use crate::handlers::remove_meal_items::{RemoveMealItemsHandler, RemoveMealItemsReq};
-use crate::handlers::remove_order::{RemoveOrderHandler};
+use crate::usecases::handlers::add_meal_items::{AddMealItemsHandler, AddMealItemsReq};
+use crate::usecases::handlers::add_order::{AddOrderHandler, AddOrderReq};
+use crate::usecases::handlers::query_meal_item::QueryMealItemHandler;
+use crate::usecases::handlers::query_order::QueryOrderHandler;
+use crate::usecases::handlers::remove_meal_items::{RemoveMealItemsHandler, RemoveMealItemsReq};
+use crate::usecases::handlers::remove_order::{RemoveOrderHandler};
 use crate::libraries::thread_pool::{ThreadPool};
 use crate::repositories::order::OrderRepo;
 
 mod models;
 mod repositories;
 mod libraries;
-mod handlers;
+mod usecases;
 
 #[derive(Deserialize)]
 struct QueryOrderParams {

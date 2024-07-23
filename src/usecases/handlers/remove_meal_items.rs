@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use warp::http::StatusCode;
 use warp::reply::json;
-use crate::handlers::error::{ErrResp, MESSAGE_ITEMS_PARTIALLY_REMOVED, MESSAGE_ORDER_NOT_FOUND};
+use crate::usecases::models::error::{ErrResp, MESSAGE_ITEMS_PARTIALLY_REMOVED, MESSAGE_ORDER_NOT_FOUND};
 use crate::repositories::order::OrderRepo;
 
 #[derive(Deserialize)]

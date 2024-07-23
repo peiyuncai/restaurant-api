@@ -1,6 +1,6 @@
 use std::sync::{Arc};
 use warp::http::{StatusCode};
-use crate::handlers::error::{ErrResp, MESSAGE_ORDER_NOT_FOUND, MESSAGE_ORDER_REMOVAL_CONFLICT};
+use crate::usecases::models::error::{ErrResp, MESSAGE_ORDER_NOT_FOUND, MESSAGE_ORDER_REMOVAL_CONFLICT};
 use crate::repositories::order::OrderRepo;
 
 pub struct RemoveOrderHandler {

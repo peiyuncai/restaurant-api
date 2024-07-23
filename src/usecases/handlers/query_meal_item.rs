@@ -2,7 +2,7 @@ use std::sync::{Arc};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use warp::http::StatusCode;
-use crate::handlers::error::{ErrResp, MESSAGE_ITEM_NOT_FOUND};
+use crate::usecases::models::error::{ErrResp, MESSAGE_ITEM_NOT_FOUND};
 use crate::models::meal::{MealItem};
 use crate::repositories::order::OrderRepo;
 

@@ -2,15 +2,22 @@ use std::sync::{Arc};
 use std::thread::{sleep};
 use std::time::Duration;
 use serde::{Deserialize, Serialize};
+use uuid::Uuid;
 use warp::http::StatusCode;
-use crate::handlers::add_meal_items::{MenuItemReq};
-use crate::handlers::error::{ErrResp, MESSAGE_ORDER_ADD_CONFLICT};
-use crate::handlers::query_order::{OrderResp};
+use crate::usecases::models::error::{ErrResp, MESSAGE_ORDER_ADD_CONFLICT};
 use crate::libraries::thread_pool::{ThreadPoolDyn};
 use crate::models::meal::{MealItemStatus};
 use crate::models::menu::MenuItem;
 use crate::models::order::Order;
 use crate::repositories::order::OrderRepo;
+use crate::usecases::models::order_resp::OrderResp;
+
+#[derive(Deserialize)]
+pub struct MenuItemReq {
+    pub menu_item_id: Uuid,
+    pub name: String,
+    pub price: String,
+}
 
 #[derive(Deserialize)]
 pub struct AddOrderReq {

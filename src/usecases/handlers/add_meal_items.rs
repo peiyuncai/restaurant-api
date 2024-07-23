@@ -4,12 +4,12 @@ use std::time::Duration;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use warp::http::StatusCode;
-use crate::handlers::error::{ErrResp, MESSAGE_ORDER_NOT_FOUND};
-use crate::handlers::query_order::{OrderResp};
+use crate::usecases::models::error::{ErrResp, MESSAGE_ORDER_NOT_FOUND};
 use crate::libraries::thread_pool::{ThreadPoolDyn};
 use crate::models::meal::{MealItem, MealItemStatus};
 use crate::models::menu::MenuItem;
 use crate::repositories::order::OrderRepo;
+use crate::usecases::models::order_resp::OrderResp;
 
 #[derive(Deserialize)]
 pub struct MenuItemReq {

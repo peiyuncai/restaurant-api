@@ -3,8 +3,7 @@ use warp::reply::Reply;
 use warp::hyper::body::to_bytes;
 use uuid::Uuid;
 use warp::http::StatusCode;
-use crate::handlers::add_meal_items::{MenuItemReq};
-use crate::handlers::add_order::{AddOrderHandler, AddOrderReq, AddOrderResp};
+use crate::usecases::handlers::add_order::{AddOrderHandler, AddOrderReq, AddOrderResp, MenuItemReq};
 use crate::libraries::mocks::thread_pool_mock::MockThreadPool;
 use crate::repositories::order::OrderRepo;
 
