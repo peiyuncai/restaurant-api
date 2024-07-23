@@ -89,9 +89,9 @@ impl OrderResp {
     }
 }
 
-#[derive(Serialize)]
-struct QueryOrderResp {
-    order: OrderResp,
+#[derive(Serialize, Deserialize, Debug)]
+pub struct QueryOrderResp {
+    pub order: OrderResp,
 }
 
 pub struct QueryOrderHandler {

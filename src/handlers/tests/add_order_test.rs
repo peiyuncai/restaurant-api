@@ -5,12 +5,11 @@ use uuid::Uuid;
 use warp::http::StatusCode;
 use crate::handlers::add_meal_items::{MenuItemReq};
 use crate::handlers::add_order::{AddOrderHandler, AddOrderReq, AddOrderResp};
-use crate::handlers::query_order::OrderResp;
 use crate::handlers::tests::thread_pool_mock::MockThreadPool;
 use crate::repositories::order::OrderRepo;
 
 #[tokio::test]
-async fn test_add_order_success() {
+async fn test_add_order_handler_handle_success() {
     let order_repo = Arc::new(OrderRepo::new());
     let thread_pool = Arc::new(MockThreadPool::new());
 

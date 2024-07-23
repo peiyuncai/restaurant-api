@@ -10,7 +10,7 @@ use crate::models::order::Order;
 use crate::repositories::order::OrderRepo;
 
 #[tokio::test]
-async fn test_add_meal_items_handler_success() {
+async fn test_add_meal_items_handler_handle_success() {
     let order_repo = Arc::new(OrderRepo::new());
     let thread_pool = Arc::new(MockThreadPool::new());
 
@@ -55,7 +55,7 @@ async fn test_add_meal_items_handler_success() {
 }
 
 #[tokio::test]
-async fn test_add_meal_items_handler_not_found() {
+async fn test_add_meal_items_handler_handle_not_found() {
     let order_repo = Arc::new(OrderRepo::new());
     let thread_pool = Arc::new(MockThreadPool::new());
 
