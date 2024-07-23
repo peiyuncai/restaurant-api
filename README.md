@@ -36,11 +36,13 @@ make test
 Can run in any order.
 However, to run happy case, There are some assumptions need to know.
 #### Assumption
-1. We can only create order if there is no order in received or preparing status for the same table
-2. We can only add meal items if there exists order for the table
-3. We can only remove meal item if it's not being prepared or completed
-4. We can only remove order if none of the meal item is being prepared or completed
-5. We always do soft delete, meaning data is not really removed
+1. Order has four status: Received, Preparing, Completed, and Canceled
+2. MealItem has three status: Receive, Preparing, and Completed. Plus is_removed flag.
+3. We can only create order if there is no order in received or preparing status for the same table
+4. We can only add meal items if there exists order for the table
+5. We can only remove meal item if it's not being prepared or completed
+6. We can only remove order if none of the meal item is being prepared or completed
+7. We always do soft delete, meaning data is not really removed from data store
 
 #### Steps
 1. start application
@@ -81,24 +83,26 @@ However, to run happy case, There are some assumptions need to know.
 
 ### Application Logic
 
-We start server on 127.0.0.1:3030 by running **cargo run** or *cargo run -- {pool_size}* and can serve each request
-asynchronously. I did not limit the threads here.
-When we receive POST /order or POST /meal-items, the thread will put meal item cooking jobs in channel.
-On the other hand, we have a chef thread pool to consume cooking job and prepare the meal item.
-Here give an example. Assume we have 2 thread in the thread pool which means we have 2 chefs.
-When client issue a request with 3 meal_items for table 1, these 3 items will be sent to channel(FIFO).
-If client issue a request again with 2 meal_items for table 2, these 2 items will be sent to the same channel as well.
-The chef thread will loop consuming the meal_item from channel and based on meal_item's cooking_item, chef thread will go
-sleep to simulate busy cooking the meal item until time is elapsed. Then it will wake up and consume another meal item from channel.
-Before it goes to sleep, it will update meal_item's status as **preparing**, so client can't cancel it.
-After thread wakes up, it will then mark meal item status as **completed**, and client can't cancel it either.
-Other meal items queued in the channel whose status is the default **received**, so client can still cancel it.
-If chef thread gets the meal from channel and connect db checking meal's status and find it's canceled, then it will return
-without further processing.
-There is cooking_time_upper_bound_in_min in order model which is the sum of non-removed and non-completed meal items'
-cooking time.
-Since there could be more than one chef thread to process meal, the actual cooking time could be less, but we use
-upper_bound here to denote max required time.
+We start the server on **127.0.0.1:3030** by **running cargo run** or **cargo run -- {pool_size}**. 
+The server can handle each request asynchronously. I did not limit the number of threads here which can be improved.
+
+When a POST request is received at **/order** or **/meal-items**, the thread places each meal item as a cooking job into a channel. 
+Concurrently, a chef thread pool consumes these cooking jobs from the channel and prepares the meal items.
+
+For example, if the thread pool has 2 threads, it means we have 2 chefs. 
+When a client sends a request with 3 meal_items for table 1, these 3 items representing 3 jobs are sent to the channel (FIFO). 
+If another request with 2 meal_items for table 2 is received, these items are also sent to the same channel.
+
+The chef threads continuously consume meal items from the channel. 
+Based on the cooking time of each meal item, the chef thread will sleep to simulate the cooking process. 
+Before going to sleep, the chef thread update meal item's status as _Preparing_, preventing the client from canceling it. 
+Once the thread wakes up, it updates meal item's status as _Completed_, preventing the client from canceling it.
+
+Meal items in the channel with the default status received can still be canceled by the client. 
+If a chef thread retrieves a meal item and finds it's removed from the order after checking the database, it will return without further processing.
+
+The cooking_time_upper_bound_in_min in the order model represents the sum of the cooking times for non-removed and non-completed meal items. 
+While multiple chef threads can process meals simultaneously, potentially reducing the actual cooking time, the upper bound indicates the _maximum_ required time.
 
 ### Application Improvement Areas
 
@@ -116,4 +120,5 @@ There are still many improvements space. I will note down here.
 8. Once order gets started preparing, we can't cancel order as a whole. We can improve to have more granular control where maybe we can cancel those meals not yet being prepared.
 9. API Path and method design did not follow best practice. Can be improved.
 10. Currently, we can delete data multiple times, this can be improved.
+11. I am still trying to refine the logic so to use borrow or moving ownership rightly
 
