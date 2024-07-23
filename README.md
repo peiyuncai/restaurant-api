@@ -40,6 +40,7 @@ However, to run happy case, There are some assumptions need to know.
 2. We can only add meal items if there exists order for the table
 3. We can only remove meal item if it's not being prepared or completed
 4. We can only remove order if none of the meal item is being prepared or completed
+5. We always do soft delete, meaning data is not really removed
 
 #### Steps
 1. start application
@@ -99,7 +100,7 @@ cooking time.
 Since there could be more than one chef thread to process meal, the actual cooking time could be less, but we use
 upper_bound here to denote max required time.
 
-### Application Todo
+### Application Improvement Areas
 
 Due to time constraints, I have not yet finished everything but this version should cover basic functions.
 There are still many improvements space. I will note down here.
@@ -113,5 +114,6 @@ There are still many improvements space. I will note down here.
 6. Limit the number of threads serving API requests
 7. Archive completed order to another table (another data structure). Now when order is completed or canceled, order can be overridden.
 8. Once order gets started preparing, we can't cancel order as a whole. We can improve to have more granular control where maybe we can cancel those meals not yet being prepared.
-9. API Path design did not follow best practice. Can be improved.
+9. API Path and method design did not follow best practice. Can be improved.
+10. Currently, we can delete data multiple times, this can be improved.
 
