@@ -131,6 +131,7 @@ There are still many improvements space. I will note down here.
 10. Currently, we can delete data multiple times, this can be improved.
 11. I am still trying to refine the logic so to either borrow or move ownership of value rightly
 12. Remove the duplicated code
+13. There is very little mixing between business logic and data CRUD layer. Could be decoupled more.
 
 
 ### Class Diagram
