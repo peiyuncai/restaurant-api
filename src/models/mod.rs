@@ -4,3 +4,4 @@ pub mod order;
 pub mod price;
 mod price_test;
 mod order_test;
+mod meal_test;
