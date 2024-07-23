@@ -39,7 +39,7 @@ paths:
               schema:
                 type: object
                 properties:
-                  order:
+                  data:
                     type: object
                     properties:
                       remaining_cooking_time_upper_bound_in_min:
@@ -82,9 +82,9 @@ paths:
               schema:
                 type: object
                 properties:
-                  message:
+                  error_message:
                     type: string
-                    example: "Internal Server Error"                       
+                    example: "Internal Server Error"
 
   /orders/{table-id}:
     get:
@@ -110,7 +110,7 @@ paths:
               schema:
                 type: object
                 properties:
-                  order:
+                  data:
                     type: object
                     properties:
                       remaining_cooking_time_upper_bound_in_min:
@@ -153,9 +153,9 @@ paths:
               schema:
                 type: object
                 properties:
-                  message:
+                  error_message:
                     type: string
-                    example: "There are no orders associated with this table"                       
+                    example: "There are no order associated with this table"
 
     delete:
       summary: "Delete order by table ID"
@@ -167,19 +167,8 @@ paths:
             type: integer
           example: 2
       responses:
-        '200':
+        '204':
           description: "Order deleted"
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  table_id:
-                    type: integer
-                    example: 2
-                  message:
-                    type: string
-                    example: "Success"
         '409':
           description: "Order conflicted"
           content:
@@ -187,12 +176,9 @@ paths:
               schema:
                 type: object
                 properties:
-                  table_id:
-                    type: integer
-                    example: 2
-                  message:
+                  error_message:
                     type: string
-                    example: "Order cannot be removed as it is already started preparing, or completed"  
+                    example: "Order cannot be removed as it is already started preparing, or completed"
         '404':
           description: "Order not found"
           content:
@@ -200,9 +186,9 @@ paths:
               schema:
                 type: object
                 properties:
-                  message:
+                  error_message:
                     type: string
-                    example: "There are no orders associated with this table"              
+                    example: "There are no order associated with this table"
 
   /meal-items:
     post:
@@ -240,7 +226,7 @@ paths:
               schema:
                 type: object
                 properties:
-                  order:
+                  data:
                     type: object
                     properties:
                       remaining_cooking_time_upper_bound_in_min:
@@ -283,9 +269,9 @@ paths:
               schema:
                 type: object
                 properties:
-                  message:
+                  error_message:
                     type: string
-                    example: "Internal Server Error"   
+                    example: "Internal Server Error"
         '404':
           description: "Order not found"
           content:
@@ -293,9 +279,9 @@ paths:
               schema:
                 type: object
                 properties:
-                  message:
+                  error_message:
                     type: string
-                    example: "There are no orders associated with this table"               
+                    example: "There are no order associated with this table"
 
     delete:
       summary: "Remove meal items from an order"
@@ -316,25 +302,8 @@ paths:
                     format: uuid
                     example: "ee5c8739-10a8-4b56-9c3c-7104dbfd286f"
       responses:
-        '200':
+        '204':
           description: "Meal items removed"
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  table_id:
-                    type: integer
-                    example: 2
-                  non_removable_meal_item_ids:
-                    type: array
-                    items:
-                      type: string
-                      format: uuid
-                    example: []
-                  message:
-                    type: string
-                    example: "All specified items have been removed successfully."    
         '409':
           description: "Meal items partially or none are removed"
           content:
@@ -342,18 +311,15 @@ paths:
               schema:
                 type: object
                 properties:
-                  table_id:
-                    type: integer
-                    example: 2
                   non_removable_meal_item_ids:
                     type: array
                     items:
                       type: string
                       format: uuid
-                      example: "ee5c8739-10a8-4b56-9c3c-7104dbfd286f"  
-                  message:
+                      example: "ee5c8739-10a8-4b56-9c3c-7104dbfd286f"
+                  error_message:
                     type: string
-                    example: "Some items could not be removed as they are already started preparing, or completed."                  
+                    example: "Some items could not be removed as they are already started preparing, completed, or simply not existed."
         '404':
           description: "Meal items not found"
           content:
@@ -361,9 +327,9 @@ paths:
               schema:
                 type: object
                 properties:
-                  message:
+                  error_message:
                     type: string
-                    example: "The specified meal items can't be found for this table"                
+                    example: "The specified meal item can't be found for this table"
 
   /meal-items/{table-id}/{meal-item-id}:
     get:
@@ -390,7 +356,7 @@ paths:
               schema:
                 type: object
                 properties:
-                  meal_item:
+                  data:
                     type: object
                     properties:
                       meal_item_id:
@@ -419,6 +385,6 @@ paths:
               schema:
                 type: object
                 properties:
-                  message:
+                  error_message:
                     type: string
                     example: "The specified meal items can't be found for this table" 
