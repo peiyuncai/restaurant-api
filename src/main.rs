@@ -59,7 +59,7 @@ async fn main() {
     let query_order = warp::get()
         .and(warp::path("orders"))
         .and(warp::path::param())
-        .and(warp::query::<QueryOrderParams>()) // Query parameter
+        .and(warp::query::<QueryOrderParams>())
         .and_then(move |table_id: u32, params: QueryOrderParams| {
             let handler = query_order_handler.clone();
             async move { handler.handle(table_id, params.include_removed_items) }

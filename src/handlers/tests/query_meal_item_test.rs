@@ -47,10 +47,8 @@ async fn test_query_meal_item_handler_handle_not_found() {
 
     let response = handler.handle(1, Uuid::new_v4()).unwrap();
 
-    // Convert response into warp::http::Response
     let response = response.into_response();
 
-    // Extract status code and body
     let status = response.status();
     let body = to_bytes(response.into_body()).await.unwrap();
     let body_bytes = body.to_vec();

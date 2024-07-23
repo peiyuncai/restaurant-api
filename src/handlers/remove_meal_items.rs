@@ -36,7 +36,7 @@ impl RemoveMealItemsHandler {
                 error_message: MESSAGE_ORDER_NOT_FOUND.to_string(),
             };
             return Ok(warp::reply::with_status(
-                warp::reply::json(&resp),
+                json(&resp),
                 StatusCode::NOT_FOUND,
             ));
         }

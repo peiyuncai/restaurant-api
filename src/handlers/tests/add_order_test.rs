@@ -33,10 +33,8 @@ async fn test_add_order_handler_handle_success() {
 
     let response = handler.handle(req).unwrap();
 
-    // Convert response into warp::http::Response
     let response = response.into_response();
 
-    // Extract status code and body
     let status = response.status();
     let body = to_bytes(response.into_body()).await.unwrap();
     let body_bytes = body.to_vec();
