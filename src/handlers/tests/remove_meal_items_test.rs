@@ -2,7 +2,7 @@ use std::sync::Arc;
 use warp::reply::Reply;
 use warp::hyper::body::to_bytes;
 use warp::http::StatusCode;
-use crate::handlers::error::{ErrResp, MESSAGE_ITEMS_REMOVAL_FAILED, MESSAGE_ORDER_NOT_FOUND, MESSAGE_ORDER_REMOVAL_FAILED};
+use crate::handlers::error::{ErrResp, MESSAGE_ITEMS_PARTIALLY_REMOVED, MESSAGE_ORDER_NOT_FOUND};
 use crate::handlers::remove_meal_items::{RemoveMealItemsHandler, RemoveMealItemsReq, RemoveMealItemsResp};
 use crate::models::meal::{MealItem, MealItemStatus};
 use crate::models::menu::MenuItem;
@@ -59,7 +59,7 @@ async fn test_remove_meal_items_handler_handle_not_found() {
 }
 
 #[tokio::test]
-async fn test_remove_meal_items_handler_handle_conflict() {
+async fn test_remove_meal_items_handler_handle_partial_success() {
     let order_repo = Arc::new(OrderRepo::new());
 
     let handler = RemoveMealItemsHandler::new(order_repo.clone());
@@ -87,9 +87,9 @@ async fn test_remove_meal_items_handler_handle_conflict() {
 
     let expected_body = RemoveMealItemsResp {
         non_removable_meal_item_ids: vec![meal_item.id()],
-        message: MESSAGE_ITEMS_REMOVAL_FAILED.to_string(),
+        message: MESSAGE_ITEMS_PARTIALLY_REMOVED.to_string(),
     };
 
-    assert_eq!(status, StatusCode::CONFLICT);
+    assert_eq!(status, StatusCode::OK);
     assert_eq!(expected_body, actual_body);
 }

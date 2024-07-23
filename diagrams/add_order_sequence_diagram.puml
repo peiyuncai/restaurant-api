@@ -1,7 +1,7 @@
 @startuml
 
 actor Client as client
-participant AddMealItemsHandler as handler
+participant AddOrderHandler as handler
 box "Order Repo"
 participant OrderRepo as repo
 database "OrderDataStore\n(DashMap)" as db
@@ -12,14 +12,17 @@ participant worker as worker
 queue channel as chan
 end box
 
-client -> handler : add meal items
-handler -> handler : convert menu items to meal items
+client -> handler : add order
 
-handler -> repo: add meal items to db
-repo -> db: add meal items to db
+handler -> repo: get order from db to check if there is an order \nin Received or Preparing status for the table
 
 alt 200 Ok
-loop each meal item
+handler -> handler : convert to order
+
+handler -> repo: add order to db
+repo -> db: add order to db
+
+loop each meal item of order
   handler -> pool: send meal cooking job to channel
   pool -> chan: send
 end
@@ -31,8 +34,8 @@ loop
 worker -> chan: get meal cooking job from channel and \ncook(sleep) based on cooking time
 end
 
-else 404 Not Found
-handler -> client: order not found
+else 409 Conflict
+handler -> client: there is an ongoing order for the table
 end
 
 @enduml

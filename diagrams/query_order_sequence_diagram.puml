@@ -1,0 +1,22 @@
+@startuml
+
+actor Client as client
+participant QueryOrderHandler as handler
+box "Order Repo"
+participant OrderRepo as repo
+database "OrderDataStore\n(DashMap)" as db
+end box
+
+client -> handler : query order
+
+handler -> repo: get order by table id
+repo -> db: get order
+
+alt 200 Ok
+handler -> client: order
+
+else 404 Not Found
+handler -> client: order not found
+end
+
+@enduml

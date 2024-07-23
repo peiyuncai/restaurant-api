@@ -1,0 +1,25 @@
+@startuml
+
+actor Client as client
+participant RemoveOrderHandler as handler
+box "Order Repo"
+participant OrderRepo as repo
+database "OrderDataStore\n(DashMap)" as db
+end box
+
+client -> handler : remove order
+
+handler -> repo: remove order by table id
+repo -> db: remove order(i.e., all meal items) \nif it's not yet Preparing or Completed
+
+alt 204 No Content
+handler -> client:
+
+else 409 Conflict
+handler -> client: cannot be removed as it is already \nstarted preparing, or completed
+
+else 404 Not Found
+handler -> client: order not found
+end
+
+@enduml

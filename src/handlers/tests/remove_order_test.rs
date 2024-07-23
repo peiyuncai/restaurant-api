@@ -2,7 +2,7 @@ use std::sync::Arc;
 use warp::reply::Reply;
 use warp::hyper::body::to_bytes;
 use warp::http::StatusCode;
-use crate::handlers::error::{ErrResp, MESSAGE_ORDER_NOT_FOUND, MESSAGE_ORDER_REMOVAL_FAILED};
+use crate::handlers::error::{ErrResp, MESSAGE_ORDER_NOT_FOUND, MESSAGE_ORDER_REMOVAL_CONFLICT};
 use crate::handlers::remove_order::RemoveOrderHandler;
 use crate::models::meal::{MealItem, MealItemStatus};
 use crate::models::menu::MenuItem;
@@ -69,7 +69,7 @@ async fn test_remove_order_handler_handle_conflict() {
     let body_bytes = body.to_vec();
     let actual_body: ErrResp = serde_json::from_slice(&*body_bytes).expect("failed to parse");
 
-    let expected_body: ErrResp = ErrResp { error_message: MESSAGE_ORDER_REMOVAL_FAILED.to_string() };
+    let expected_body: ErrResp = ErrResp { error_message: MESSAGE_ORDER_REMOVAL_CONFLICT.to_string() };
 
     assert_eq!(status, StatusCode::CONFLICT);
     assert_eq!(expected_body, actual_body);

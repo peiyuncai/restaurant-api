@@ -1,6 +1,6 @@
 use std::sync::{Arc};
 use warp::http::{StatusCode};
-use crate::handlers::error::{ErrResp, MESSAGE_ORDER_NOT_FOUND, MESSAGE_ORDER_REMOVAL_FAILED};
+use crate::handlers::error::{ErrResp, MESSAGE_ORDER_NOT_FOUND, MESSAGE_ORDER_REMOVAL_CONFLICT};
 use crate::repositories::order::OrderRepo;
 
 pub struct RemoveOrderHandler {
@@ -33,7 +33,7 @@ impl RemoveOrderHandler {
             ))
         } else {
             let resp = ErrResp {
-                error_message: MESSAGE_ORDER_REMOVAL_FAILED.to_string(),
+                error_message: MESSAGE_ORDER_REMOVAL_CONFLICT.to_string(),
             };
             Ok(warp::reply::with_status(
                 warp::reply::json(&resp),

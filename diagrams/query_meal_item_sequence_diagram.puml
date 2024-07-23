@@ -1,0 +1,22 @@
+@startuml
+
+actor Client as client
+participant QueryMealItemHandler as handler
+box "Order Repo"
+participant OrderRepo as repo
+database "OrderDataStore\n(DashMap)" as db
+end box
+
+client -> handler : query meal item
+
+handler -> repo: get meal item by table id and meal item id
+repo -> db: get meal item
+
+alt 200 Ok
+handler -> client: meal item
+
+else 404 Not Found
+handler -> client: meal item not found
+end
+
+@enduml

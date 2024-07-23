@@ -1,0 +1,28 @@
+@startuml
+
+actor Client as client
+participant RemoveMealItemsHandler as handler
+box "Order Repo"
+participant OrderRepo as repo
+database "OrderDataStore\n(DashMap)" as db
+end box
+
+client -> handler : remove meal items
+
+handler -> repo: remove meal items by meal item ids
+repo -> db: remove meal items
+loop each meal item
+db -> db : remove meal item if it exists and\n if it's not yet Preparing or Completed
+end
+
+alt 204 No Content
+handler -> client:
+
+else 200 Ok
+handler -> client: If items can be removed, they are removed;\notherwise, no operation since meals are either \nstarted preparing, completed, or simply not existed.
+
+else 404 Not Found
+handler -> client: order not found
+end
+
+@enduml
