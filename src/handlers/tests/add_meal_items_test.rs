@@ -3,7 +3,7 @@ use warp::reply::Reply;
 use warp::hyper::body::to_bytes;
 use uuid::Uuid;
 use warp::http::StatusCode;
-use crate::handlers::add_meal_items::{AddMealItemsHandler, AddMealItemsReq, MenuItemReq};
+use crate::handlers::add_meal_items::{AddMealItemsHandler, AddMealItemsReq, AddMealItemsResp, MenuItemReq};
 use crate::handlers::error::ErrResp;
 use crate::handlers::tests::thread_pool_mock::MockThreadPool;
 use crate::models::order::Order;
@@ -12,7 +12,7 @@ use crate::repositories::order::OrderRepo;
 #[tokio::test]
 async fn test_add_meal_items_handler_success() {
     let order_repo = Arc::new(OrderRepo::new());
-    let thread_pool = Arc::new(MockThreadPool::new(2));
+    let thread_pool = Arc::new(MockThreadPool::new());
 
     let handler = AddMealItemsHandler::new(order_repo.clone(), thread_pool.clone());
 
@@ -42,21 +42,22 @@ async fn test_add_meal_items_handler_success() {
 
     // Extract status code and body
     let status = response.status();
-    // TODO: not working now though e2e tests are fine
     let body = to_bytes(response.into_body()).await.unwrap();
-    // let body_bytes = body.to_vec();
-    // let actual_body: OrderResp = serde_json::from_slice(&*body_bytes).expect("failed to parse");
-    // println!("{:?}", actual_body);
+    let body_bytes = body.to_vec();
+    let actual_resp: AddMealItemsResp = serde_json::from_slice(&*body_bytes).expect("failed to parse");
 
     thread_pool.wait();
     assert_eq!(status, StatusCode::OK);
     assert_eq!(2, thread_pool.get_count());
+    assert_eq!("1134", actual_resp.order.total_price);
+    assert_eq!("Received", actual_resp.order.status);
+    assert_eq!(2, actual_resp.order.meal_items.len());
 }
 
 #[tokio::test]
 async fn test_add_meal_items_handler_not_found() {
     let order_repo = Arc::new(OrderRepo::new());
-    let thread_pool = Arc::new(MockThreadPool::new(2));
+    let thread_pool = Arc::new(MockThreadPool::new());
 
     let handler = AddMealItemsHandler::new(order_repo.clone(), thread_pool.clone());
 

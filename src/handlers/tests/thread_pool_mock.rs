@@ -9,7 +9,7 @@ pub struct MockThreadPool {
 }
 
 impl MockThreadPool {
-    pub fn new(size: usize) -> Self {
+    pub fn new() -> Self {
         MockThreadPool {
             counter: Arc::new(AtomicUsize::new(0)),
             threads: Arc::new(Mutex::new(Vec::new())), //plus main thread

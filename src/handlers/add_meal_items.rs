@@ -20,13 +20,13 @@ pub struct MenuItemReq {
 
 #[derive(Deserialize)]
 pub struct AddMealItemsReq {
-    pub(crate) table_id: u32,
-    pub(crate) menu_items: Vec<MenuItemReq>,
+    pub table_id: u32,
+    pub menu_items: Vec<MenuItemReq>,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct AddMealItemsResp {
-    order: OrderResp,
+    pub order: OrderResp,
 }
 
 pub struct AddMealItemsHandler {

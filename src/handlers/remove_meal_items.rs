@@ -8,15 +8,15 @@ use crate::repositories::order::OrderRepo;
 
 #[derive(Deserialize)]
 pub struct RemoveMealItemsReq {
-    table_id: u32,
-    meal_item_ids: Vec<Uuid>,
+    pub table_id: u32,
+    pub meal_item_ids: Vec<Uuid>,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct RemoveMealItemsResp {
-    table_id: u32,
-    non_removable_meal_item_ids: Vec<Uuid>,
-    message: String,
+    pub table_id: u32,
+    pub non_removable_meal_item_ids: Vec<Uuid>,
+    pub message: String,
 }
 
 pub struct RemoveMealItemsHandler {

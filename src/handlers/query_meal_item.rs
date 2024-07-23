@@ -1,12 +1,12 @@
 use std::sync::{Arc};
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use warp::http::StatusCode;
 use crate::handlers::error::{ErrResp, MESSAGE_ITEM_NOT_FOUND};
 use crate::models::meal::{MealItem};
 use crate::repositories::order::OrderRepo;
 
-#[derive(Serialize)]
+#[derive(Serialize, Deserialize, Debug)]
 struct MealItemResp {
     meal_item_id: Uuid,
     name: String,
@@ -29,7 +29,7 @@ impl MealItemResp {
     }
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, Deserialize, Debug)]
 struct QueryMealItemResp {
     meal_item: MealItemResp,
 }

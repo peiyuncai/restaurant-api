@@ -8,7 +8,7 @@ use crate::models::order::{Order, OrderStatus};
 use crate::repositories::order::OrderRepo;
 
 #[derive(Serialize, Deserialize, Debug)]
-struct MealItemResp {
+pub struct MealItemResp {
     meal_item_id: Uuid,
     name: String,
     price: String,
@@ -19,10 +19,10 @@ struct MealItemResp {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct OrderResp {
-    remaining_cooking_time_upper_bound_in_min: u32,
-    total_price: String,
-    status: String,
-    meal_items: Vec<MealItemResp>,
+    pub remaining_cooking_time_upper_bound_in_min: u32,
+    pub total_price: String,
+    pub status: String,
+    pub meal_items: Vec<MealItemResp>,
 }
 
 impl OrderResp {

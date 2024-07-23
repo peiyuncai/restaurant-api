@@ -1,13 +1,13 @@
 use std::sync::{Arc};
-use serde::{Serialize};
+use serde::{Deserialize, Serialize};
 use warp::http::{StatusCode};
 use crate::handlers::error::{ErrResp, MESSAGE_ORDER_NOT_FOUND, MESSAGE_ORDER_REMOVAL_FAILED};
 use crate::repositories::order::OrderRepo;
 
-#[derive(Serialize)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct RemoveOrderResp {
-    table_id: u32,
-    message: String,
+    pub table_id: u32,
+    pub message: String,
 }
 
 pub struct RemoveOrderHandler {
