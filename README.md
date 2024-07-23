@@ -134,4 +134,20 @@ There are still many improvements space. I will note down here.
 
 
 ### Class Diagram
-![class diagram](diagrams/class.png)
+![class diagram](diagrams/images/class.png)
+
+### Sequence Diagrams
+- add meal items sequence diagram
+![add_meal_items](diagrams/images/add_meal_items_sequence_diagram.png)
+- add order sequence diagram
+![add_order](diagrams/images/add_order_sequence_diagram.png)
+- worker in detail sequence diagram
+![worker](diagrams/images/worker_sequence_diagram.png)
+- query meal item sequence diagram
+![query_meal_item](diagrams/images/query_meal_item_sequence_diagram.png)
+- query order sequence diagram
+![query_order](diagrams/images/query_order_sequence_diagram.png)
+- remove meal items sequence diagram
+![remove_meal_items](diagrams/images/remove_meal_items_sequence_diagram.png)
+- remove order sequence diagram
+![remove_order](diagrams/images/remove_order_sequence_diagram.png)

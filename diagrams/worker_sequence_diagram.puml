@@ -1,0 +1,33 @@
+@startuml
+
+box "Thread Pool" #LightBlue
+participant ThreadPool as pool
+participant worker as worker
+queue channel as chan
+end box
+
+box "Order Repo"
+participant OrderRepo as repo
+end box
+
+pool -> chan: send
+
+loop
+worker -> chan: get meal cooking job from channel
+
+worker -> repo: get meal item
+
+alt if item is removed
+return
+
+else not removed
+worker -> repo: update meal item status as Preparing
+
+worker -> worker: sleep
+
+worker -> repo:  update meal item status as Completed
+end
+
+end
+
+@enduml
