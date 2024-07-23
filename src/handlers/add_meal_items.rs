@@ -26,7 +26,7 @@ pub struct AddMealItemsReq {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct AddMealItemsResp {
-    pub order: OrderResp,
+    pub data: OrderResp,
 }
 
 pub struct AddMealItemsHandler {
@@ -94,7 +94,7 @@ impl AddMealItemsHandler {
 
         if let Some(order) = self.order_repo.get_order_by_table_id(req.table_id) {
             let resp = AddMealItemsResp {
-                order: OrderResp::new(order.lock().unwrap().clone(), false),
+                data: OrderResp::new(order.lock().unwrap().clone(), false),
             };
             return Ok(warp::reply::with_status(
                 warp::reply::json(&resp),

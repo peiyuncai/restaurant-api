@@ -31,7 +31,7 @@ impl MealItemResp {
 
 #[derive(Serialize, Deserialize, Debug)]
 struct QueryMealItemResp {
-    meal_item: MealItemResp,
+    data: MealItemResp,
 }
 
 pub struct QueryMealItemHandler {
@@ -49,7 +49,7 @@ impl QueryMealItemHandler {
         if let Some(item_arc) = self.order_repo.get_order_meal_item(table_id, meal_item_id) {
             let item = item_arc.lock().unwrap().clone();
             let resp = QueryMealItemResp {
-                meal_item: MealItemResp::new(item),
+                data: MealItemResp::new(item),
             };
             Ok(warp::reply::with_status(
                 warp::reply::json(&resp),

@@ -91,7 +91,7 @@ impl OrderResp {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct QueryOrderResp {
-    pub order: OrderResp,
+    pub data: OrderResp,
 }
 
 pub struct QueryOrderHandler {
@@ -109,7 +109,7 @@ impl QueryOrderHandler {
         if let Some(order_arc) = self.order_repo.get_order_by_table_id(table_id) {
             let order = order_arc.lock().unwrap().clone();
             let resp = QueryOrderResp {
-                order: OrderResp::new(order, include_removed_items),
+                data: OrderResp::new(order, include_removed_items),
             };
             Ok(warp::reply::with_status(
                 warp::reply::json(&resp),

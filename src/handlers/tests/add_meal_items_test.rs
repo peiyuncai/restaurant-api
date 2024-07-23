@@ -5,7 +5,7 @@ use uuid::Uuid;
 use warp::http::StatusCode;
 use crate::handlers::add_meal_items::{AddMealItemsHandler, AddMealItemsReq, AddMealItemsResp, MenuItemReq};
 use crate::handlers::error::ErrResp;
-use crate::handlers::tests::thread_pool_mock::MockThreadPool;
+use crate::libraries::mocks::thread_pool_mock::MockThreadPool;
 use crate::models::order::Order;
 use crate::repositories::order::OrderRepo;
 
@@ -49,9 +49,9 @@ async fn test_add_meal_items_handler_handle_success() {
     thread_pool.wait();
     assert_eq!(status, StatusCode::OK);
     assert_eq!(2, thread_pool.get_count());
-    assert_eq!("1134", actual_resp.order.total_price);
-    assert_eq!("Received", actual_resp.order.status);
-    assert_eq!(2, actual_resp.order.meal_items.len());
+    assert_eq!("1134", actual_resp.data.total_price);
+    assert_eq!("Received", actual_resp.data.status);
+    assert_eq!(2, actual_resp.data.meal_items.len());
 }
 
 #[tokio::test]

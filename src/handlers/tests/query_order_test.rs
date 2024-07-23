@@ -36,9 +36,9 @@ async fn test_query_order_handler_handle_success() {
     let actual_resp: QueryOrderResp = serde_json::from_slice(&*body_bytes).expect("failed to parse");
     println!("{:?}", actual_resp);
     assert_eq!(status, StatusCode::OK);
-    assert_eq!("345", actual_resp.order.total_price);
-    assert_eq!("Received", actual_resp.order.status);
-    assert_eq!(1, actual_resp.order.meal_items.len());
+    assert_eq!("345", actual_resp.data.total_price);
+    assert_eq!("Received", actual_resp.data.status);
+    assert_eq!(1, actual_resp.data.meal_items.len());
 }
 
 #[tokio::test]
