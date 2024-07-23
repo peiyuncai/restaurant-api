@@ -122,3 +122,6 @@ There are still many improvements space. I will note down here.
 10. Currently, we can delete data multiple times, this can be improved.
 11. I am still trying to refine the logic so to use borrow or moving ownership rightly
 
+
+### Class Diagram
+![class diagram](diagrams/class.png)
