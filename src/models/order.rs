@@ -81,6 +81,10 @@ impl Order {
             if let Some(meal_item) = self.meal_items.get(meal_item_id) {
                 let mut meal_item = meal_item.lock().unwrap();
 
+                if meal_item.is_removed() {
+                    continue;
+                }
+
                 match meal_item.get_status() {
                     MealItemStatus::Preparing | MealItemStatus::Completed => {
                         non_removable_items.push(meal_item_id.clone());
