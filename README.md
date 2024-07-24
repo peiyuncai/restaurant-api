@@ -50,7 +50,7 @@ However, to run happy case, There are some assumptions need to know.
     - menu_item_id: could be any uuid number
     - name: could be any
     - price: if price is 50.95, then use String 5095 here
-3. run **POST /meal-items** to add more meal items to the created order
+3. run **POST /meal-items** to add more meal items to the existing order
     - table_id: should be same as previous one; otherwise, get not found error
     - menu_item_id: could be any uuid number
     - name: could be any
@@ -68,23 +68,23 @@ However, to run happy case, There are some assumptions need to know.
 7. run **DELETE /meal-items**
     - if there are any valid meal_item_ids, those meal items which are not yet being prepared will be deleted and others
       will be just omitted
-    - if table_id and none of meal_item_ids are valid, will get error message
+    - if there is no order for this table, will get not found error
 
 ### Application Modules
 
-1. main is the entry point of application
-2. handlers have all the handlers handling 6 APIs respectively
-3. libraries have thread_pool, job, and worker. These are used to create a chef thread pool, and we have a channel to
+1. _main_ is the entry point of application
+2. _usecases/handlers_ have all the handlers handling 6 APIs respectively
+3. _libraries_ have thread_pool, job, and worker. These are used to create a chef thread pool, and we have a channel to
    queue the cooking job(we use meal item's cooking time as thread's sleeping time). The number of thread should be same
    as number of chef we want.
-4. models have all the models to CRUD order, meal item, and menu item (though menu item is not really used)
-5. repositories have all the repositories for order and menu. Though menu is not really used. All the data change can
+4. _models_ have all the models to CRUD order, meal item, and menu item (though menu item is not really used)
+5. _repositories_ have all the repositories for order and menu. Though menu is not really used. All the data change can
    only be done via repositories. No data change can be done via data model. I use DashMap as data store here.
 
 ### Application Logic
 
 We start the server on **127.0.0.1:3030** by **running cargo run** or **cargo run -- {pool_size}**. 
-The server can handle each request asynchronously. I did not limit the number of threads here which can be improved.
+The server can handle each request asynchronously.
 
 When a POST request is received at **/order** or **/meal-items**, the thread places each meal item as a cooking job into a channel. 
 Concurrently, a chef thread pool consumes these cooking jobs from the channel and prepares the meal items.
@@ -95,14 +95,14 @@ If another request with 2 meal_items for table 2 is received, these items are al
 
 The chef threads continuously consume meal items from the channel. 
 Based on the cooking time of each meal item, the chef thread will sleep to simulate the cooking process.
-The field names as _cooking_time_in_min_ but to see the result faster, the thread actually sleeps for the same amount of time but unit is second.
+Though the field name is _cooking_time_in_min_ but to see the result faster, the thread actually sleeps for the same amount of time but unit is second.
 Before going to sleep, the chef thread update meal item's status as _Preparing_, preventing the client from canceling it. 
 Once the thread wakes up, it updates meal item's status as _Completed_, preventing the client from canceling it.
 
-Meal items in the channel with the default status received can still be canceled by the client. 
+Meal items in the channel having _Received_ status can still be canceled by the client. 
 If a chef thread retrieves a meal item and finds it's removed from the order after checking the database, it will return without further processing.
 
-The cooking_time_upper_bound_in_min in the order model represents the sum of the cooking times for non-removed and non-completed meal items. 
+The _remaining_cooking_time_upper_bound_in_min_ in the response represents the sum of the cooking times for non-removed and non-completed meal items. 
 While multiple chef threads can process meals simultaneously, potentially reducing the actual cooking time, the upper bound indicates the _maximum_ required time.
 
 ### Application Improvement Areas
