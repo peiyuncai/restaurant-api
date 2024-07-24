@@ -44,14 +44,15 @@ async fn test_add_meal_items_handler_handle_success() {
     let status = response.status();
     let body = to_bytes(response.into_body()).await.unwrap();
     let body_bytes = body.to_vec();
-    let actual_resp: AddMealItemsResp = serde_json::from_slice(&*body_bytes).expect("failed to parse");
+    let actual_body: AddMealItemsResp = serde_json::from_slice(&*body_bytes).expect("failed to parse");
 
     thread_pool.wait();
     assert_eq!(status, StatusCode::OK);
     assert_eq!(2, thread_pool.get_count());
-    assert_eq!("1134", actual_resp.data.total_price);
-    assert_eq!("Received", actual_resp.data.status);
-    assert_eq!(2, actual_resp.data.meal_items.len());
+    // can be improved here
+    assert_eq!("1134", actual_body.data.total_price);
+    assert_eq!("Received", actual_body.data.status);
+    assert_eq!(2, actual_body.data.meal_items.len());
 }
 
 #[tokio::test]

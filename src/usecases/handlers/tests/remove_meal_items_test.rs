@@ -65,15 +65,17 @@ async fn test_remove_meal_items_handler_handle_partial_success() {
     let handler = RemoveMealItemsHandler::new(order_repo.clone());
 
     let menu_item = MenuItem::new(String::from("fries"), String::from("345"));
-    let mut meal_item = MealItem::create(menu_item);
-    meal_item.update_state(MealItemStatus::Preparing);
+    let meal_item_fries = MealItem::create(menu_item);
+    let menu_item = MenuItem::new(String::from("burger"), String::from("789"));
+    let mut meal_item_burger = MealItem::create(menu_item);
+    meal_item_burger.update_state(MealItemStatus::Preparing);
     let mut order = Order::new(1, vec![]);
-    order.add_meal_items(vec![meal_item.clone()]);
+    order.add_meal_items(vec![meal_item_fries.clone(), meal_item_burger.clone()]);
     order_repo.add(order);
 
     let request = RemoveMealItemsReq {
         table_id: 1,
-        meal_item_ids: vec![meal_item.id()],
+        meal_item_ids: vec![meal_item_fries.id(), meal_item_burger.id()],
     };
 
     let response = handler.handle(request).unwrap();
@@ -86,7 +88,7 @@ async fn test_remove_meal_items_handler_handle_partial_success() {
     let actual_body: RemoveMealItemsResp = serde_json::from_slice(&*body_bytes).expect("failed to parse");
 
     let expected_body = RemoveMealItemsResp {
-        non_removable_meal_item_ids: vec![meal_item.id()],
+        non_removable_meal_item_ids: vec![meal_item_burger.id()],
         message: MESSAGE_ITEMS_PARTIALLY_REMOVED.to_string(),
     };
 

@@ -31,12 +31,11 @@ async fn test_query_meal_item_handler_handle_success() {
     let status = response.status();
     let body = to_bytes(response.into_body()).await.unwrap();
     let body_bytes = body.to_vec();
-    let actual_resp: QueryMealItemResp = serde_json::from_slice(&*body_bytes).expect("failed to parse");
-    let expected_resp = QueryMealItemResp { data: MealItemResp::new(meal_item_burger) };
+    let actual_body: QueryMealItemResp = serde_json::from_slice(&*body_bytes).expect("failed to parse");
+    let expected_body = QueryMealItemResp { data: MealItemResp::new(meal_item_burger) };
 
-    println!("{:?}", actual_resp);
     assert_eq!(status, StatusCode::OK);
-    assert_eq!(expected_resp, actual_resp);
+    assert_eq!(expected_body, actual_body);
 }
 
 #[tokio::test]
