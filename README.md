@@ -119,13 +119,13 @@ There are still many improvements space. I will note down here.
 6. Archive completed order to another table (another data structure). Now when order is completed or canceled, order can be overridden.
 7. Once order gets started preparing, we can't cancel order as a whole. We can improve to have more granular control where maybe we can cancel those meals not yet being prepared.
 8. API Path and method design did not follow best practice. Tried below Path but there were some issues while defining Path as below, I am still looking into this. But what's in my mind are
-   - POST /orders
-   - GET /orders/{table-id}
-   - DELETE /orders/{table-id}
-   - POST /orders/{table-id}/meal-items
-   - GET /orders/{table-id}/meal-items/{meal-item-id}
-   - DELETE /orders/{table-id}/meal-items  (for deleting multiple items)
-   - DELETE /orders/{table-id}/meal-items/{meal-item-id} (for deleting single item, not implemented, 
+   - POST /v1/orders
+   - GET /v1/orders/{table-id}
+   - DELETE /v1/orders/{table-id}
+   - POST /v1/orders/{table-id}/meal-items
+   - GET /v1/orders/{table-id}/meal-items/{meal-item-id}
+   - DELETE /v1/orders/{table-id}/meal-items  (for deleting multiple items)
+   - DELETE /v1/orders/{table-id}/meal-items/{meal-item-id} (for deleting single item, not implemented, 
    can use previous one to achieve the same goal)
 9. Currently, we can delete the same data multiple times, this can be improved.
 10. I am still trying to refine the logic so to either borrow or move ownership of value rightly
